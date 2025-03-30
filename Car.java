@@ -27,7 +27,7 @@ public class Car {
    private Image batImage;
    private Image batLeftImage;
    private Image batRightImage;
-   private Image carImage;
+   private Image carImage, carUpImage, carLeftImage, carRightImage, carDownImage;
    private SoundManager soundManager;
 
    public Car (JPanel p, int xPos, int yPos) {
@@ -43,8 +43,11 @@ public class Car {
       width = 50;
       height = 50;
 
-      carImage = ImageManager.loadImage ("images/car.png");
-
+      carUpImage = ImageManager.loadImage ("images/car.png");
+      carLeftImage= ImageManager.loadImage ("images/carLeft.png");
+      carRightImage= ImageManager.loadImage ("images/carRight.png");
+      carDownImage= ImageManager.loadImage ("images/carDown.png");
+      carImage= carUpImage;
    }
 
    public void goAway(int x, int y){
@@ -94,19 +97,19 @@ public class Car {
       int panelHeight = panel.getHeight();
       
 		if (direction == 1) {			// going left
-         // x = x - dx;
+         carImage= carLeftImage;
          setVelX(-5);
          if (x < -width)
 	         x = panelWidth;
 		}
 		else if (direction == 2) {			// going right
-         // x = x + dx;
+         carImage= carRightImage;
          setVelX(5);
          if (x > panelWidth)
             x = -width;
 		}
       else if(direction == 3){ //going up
-         // y= y - dy;
+         carImage= carUpImage;
          setVelY(-5);
          if (y <= 0){
 	         y = 0;
@@ -114,7 +117,7 @@ public class Car {
          }
       }
       else if(direction == 4){ //going down
-         // y= y + dy;
+         carImage= carDownImage;
          setVelY(5);
          if (this.y >= panelHeight - this.height){
             this.y = panelHeight - this.height;

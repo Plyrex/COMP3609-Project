@@ -30,12 +30,14 @@ public class GamePanel extends JPanel implements Runnable {
 	private SoundManager soundManager;
 	Random random= new Random();
 	int rand;
-	private int NUM_ENEMIES= random.nextInt(3, 5);
+	// private int NUM_ENEMIES= random.nextInt(3, 5);
+	private int NUM_ENEMIES= 0;
 	private int kills= 0, powerupKills= 0;
 	private StripAnimation animation, animation2;
 	private int speed= 5;
 	private int time, timeChange= 1;
 	private HealthPickup health;
+	private RotateFX rotate;
 
 	public GamePanel () {
 		soundManager= SoundManager.getInstance();
@@ -66,6 +68,7 @@ public class GamePanel extends JPanel implements Runnable {
 		// opponents[2] = new Opponent (this, 330, 10, car); 
 
 		// imageFX1= new DisintegrateFX(this);
+		rotate= new RotateFX(this, "images/health.png");
 	}
 
 	public void createOpponents(){
@@ -78,10 +81,10 @@ public class GamePanel extends JPanel implements Runnable {
 			opponents[i] = new Opponent (this, rand, 10, car, i, speed);
 		}
 		rand= random.nextInt(3);
-		if(rand==1 || rand== 2){
-			kamikaze= new Kamikaze(this, random.nextInt(400), 10, car, 0);
-			soundManager.playClip ("kamikaze", true);
-		}
+		// if(rand==1 || rand== 2){
+		// 	kamikaze= new Kamikaze(this, random.nextInt(400), 10, car, 0);
+		// 	soundManager.playClip ("kamikaze", true);
+		// }
 		speed+= 1;
 	}
 
@@ -110,7 +113,6 @@ public class GamePanel extends JPanel implements Runnable {
 		if(!isPaused){
 			for (int i=0; i<NUM_ENEMIES; i++) {
 				checkOpponents();
-				// opponents[i].erase();
 				if(spawns[i]!= null){
 					spawns[i].update();
 				}
@@ -134,6 +136,9 @@ public class GamePanel extends JPanel implements Runnable {
 			
 			if(imageFX2!= null)
 				imageFX2.update();
+
+			if(rotate!= null)
+				rotate.update();
 			
 			if(animation!= null)
 				animation.update();
@@ -145,6 +150,10 @@ public class GamePanel extends JPanel implements Runnable {
 				health.move();
 		}
 
+	}
+
+	public void updateRotate(int num){
+		rotate.setRotation(num);
 	}
 
 	public void updateBat (int direction) {
@@ -197,16 +206,16 @@ public class GamePanel extends JPanel implements Runnable {
 				powerupKills= -5;
 		}
 
-		if(kills== NUM_ENEMIES){
-			if(powerupKills== NUM_ENEMIES){
-				health= new HealthPickup(this, car);
-				animation2.start(health.getX()-20, health.getY()-10);
-			}
-			powerupKills= 0;
-			opponents= null;
-			kills= 0;
-			NUM_ENEMIES= random.nextInt(3,5);
-		}
+		// if(kills== NUM_ENEMIES){
+		// 	if(powerupKills== NUM_ENEMIES){
+		// 		health= new HealthPickup(this, car);
+		// 		animation2.start(health.getX()-20, health.getY()-10);
+		// 	}
+		// 	powerupKills= 0;
+		// 	opponents= null;
+		// 	kills= 0;
+		// 	NUM_ENEMIES= random.nextInt(3,5);
+		// }
 	}
 
 	public void endDisintegrate(){
@@ -331,6 +340,10 @@ public class GamePanel extends JPanel implements Runnable {
 			imageFX2.draw(imageContext);
 		}
 
+		if(rotate!= null){
+			rotate.draw(imageContext);
+		}
+
 		if(animation!= null){
 			animation.draw(imageContext);
 		}
@@ -355,8 +368,6 @@ public class GamePanel extends JPanel implements Runnable {
 		if (isRunning)
 			return;
 
-		// repaint(); //clears the screen
-		// soundManager.setVolume("background", 0.7f);
 		soundManager.setVolume("background", 0.7f);
 		soundManager.playClip ("background", true);
 		isPaused = false;
