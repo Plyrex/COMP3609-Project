@@ -20,7 +20,7 @@ public class GamePanel extends JPanel implements Runnable {
 	private EnemyBullet[] oppBullets;
 	private boolean isRunning;
 	private boolean isPaused;
-	private Image backgroundImage;
+	private BackgroundManager backgroundManager;
 	private BufferedImage image;
 	private Thread gameThread;
 	public ScoringPanel scoringPanel;
@@ -30,7 +30,6 @@ public class GamePanel extends JPanel implements Runnable {
 	private SoundManager soundManager;
 	Random random= new Random();
 	int rand;
-	// private int NUM_ENEMIES= random.nextInt(3, 5);
 	private int NUM_ENEMIES= 0;
 	private int kills= 0, powerupKills= 0;
 	private StripAnimation animation, animation2;
@@ -44,7 +43,6 @@ public class GamePanel extends JPanel implements Runnable {
 		scoringPanel= new ScoringPanel();
 		lifePanel= new LifePanel();
 		lifePanel.setDoubleBuffered(true);
-		backgroundImage = ImageManager.loadImage ("images/Background1.jpg");
 		image= new BufferedImage(400, 400, BufferedImage.TYPE_INT_ARGB);
 		car = null;
 		opponents = null;
@@ -55,8 +53,7 @@ public class GamePanel extends JPanel implements Runnable {
 		isRunning = false;
 		bullet= null;
 		health= null;
-
-
+		backgroundManager = new BackgroundManager("images/Background1.jpg", 400, 400);
 	}
 
 	public void createGameEntities() {
@@ -64,10 +61,6 @@ public class GamePanel extends JPanel implements Runnable {
 		createOpponents();
 		animation= new StripAnimation("images/kaboom.gif", 6, false);
 		animation2= new StripAnimation("images/select.png", 4, true);
-		// opponents[1] = new Opponent (this, 150, 10, car);
-		// opponents[2] = new Opponent (this, 330, 10, car); 
-
-		// imageFX1= new DisintegrateFX(this);
 		rotate= new RotateFX(this, "images/health.png");
 	}
 
@@ -77,14 +70,9 @@ public class GamePanel extends JPanel implements Runnable {
 		spawns= new ImageFX[NUM_ENEMIES];
 		for(int i=0; i<NUM_ENEMIES; i++){
 			rand= random.nextInt(400);
-			// spawns[i]= new DisappearFX(this, rand, 10, 58, 52, "images/opp.png", i);
 			opponents[i] = new Opponent (this, rand, 10, car, i, speed);
 		}
 		rand= random.nextInt(3);
-		// if(rand==1 || rand== 2){
-		// 	kamikaze= new Kamikaze(this, random.nextInt(400), 10, car, 0);
-		// 	soundManager.playClip ("kamikaze", true);
-		// }
 		speed+= 1;
 	}
 
@@ -111,6 +99,10 @@ public class GamePanel extends JPanel implements Runnable {
 	public void gameUpdate() {
 
 		if(!isPaused){
+			if(car != null) {
+				backgroundManager.moveBackground(car.getVelX(), car.getVelY());
+			}
+
 			for (int i=0; i<NUM_ENEMIES; i++) {
 				checkOpponents();
 				if(spawns[i]!= null){
@@ -123,7 +115,6 @@ public class GamePanel extends JPanel implements Runnable {
 					oppBullets[i].shoot();
 				}
 				if(bullet!= null && !isPaused){
-					// bullet.erase();
 					bullet.shoot();
 				}
 			}
@@ -159,7 +150,6 @@ public class GamePanel extends JPanel implements Runnable {
 	public void updateBat (int direction) {
 
 		if (car != null && !isPaused) {
-			// car.erase();
 			car.move(direction);
 		}
 
@@ -173,10 +163,6 @@ public class GamePanel extends JPanel implements Runnable {
 			car.setVelY(0);
 		}
 	}
-
-	// public void spawnEnemy(int x, int y, int height, int width){
-	// 	imageFX3= new DisappearFX(this, x, y, height, width, "images/opp.png");
-	// }
 
 	public void removeHealth(){
 		health= null;
@@ -205,17 +191,6 @@ public class GamePanel extends JPanel implements Runnable {
 			if(method== 1)
 				powerupKills= -5;
 		}
-
-		// if(kills== NUM_ENEMIES){
-		// 	if(powerupKills== NUM_ENEMIES){
-		// 		health= new HealthPickup(this, car);
-		// 		animation2.start(health.getX()-20, health.getY()-10);
-		// 	}
-		// 	powerupKills= 0;
-		// 	opponents= null;
-		// 	kills= 0;
-		// 	NUM_ENEMIES= random.nextInt(3,5);
-		// }
 	}
 
 	public void endDisintegrate(){
@@ -297,15 +272,9 @@ public class GamePanel extends JPanel implements Runnable {
 	}
 
 	public void gameRender() {
-		// repaint();
-		// erase();
 		Graphics g = getGraphics ();
-      		// Graphics2D g2 = (Graphics2D) g;
-			Graphics2D imageContext= (Graphics2D) image.getGraphics();
-			// g2.setBackground(Color.LIGHT_GRAY);
-			// g2.drawImage(backgroundImage, 0, 0, null);
-			imageContext.drawImage(backgroundImage, 0, 0, null);
-
+		Graphics2D imageContext= (Graphics2D) image.getGraphics();
+		backgroundManager.draw(imageContext);
 		if (car != null) {
 			car.draw(imageContext);
 		}
@@ -364,7 +333,7 @@ public class GamePanel extends JPanel implements Runnable {
 
 	}
 
-	public void startGame() {				// initialise and start the game thread 
+	public void startGame() {				
 		if (isRunning)
 			return;
 
@@ -372,15 +341,13 @@ public class GamePanel extends JPanel implements Runnable {
 		soundManager.playClip ("background", true);
 		isPaused = false;
 		createGameEntities();
+		backgroundManager.reset();
+		
 		gameThread = new Thread (this);			
 		gameThread.start();
-
-		// if(animation!= null){
-		// 	animation.start();
-		// }
 	}
 
-	public void pauseGame() {				// pause the game (don't update game entities)
+	public void pauseGame() {				
 		if (isRunning) {
 			if (isPaused)
 				isPaused = false;
@@ -389,7 +356,7 @@ public class GamePanel extends JPanel implements Runnable {
 		}
 	}
 
-	public void endGame() {					// end the game thread
+	public void endGame() {					
 		isRunning = false;
 		speed= 5;
 	}
