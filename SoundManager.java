@@ -37,6 +37,15 @@ public class SoundManager {				// a Singleton class
 		clip = loadClip("sounds/pickup.wav");	
 		clips.put("pickup", clip);
 
+		clip = loadClip("sounds/takeoff.wav");
+		clips.put("takeoff", clip);
+
+		clip = loadClip("sounds/engine.wav");
+		clips.put("engine", clip);
+
+		clip = loadClip("sounds/wind.wav");
+		clips.put("wind", clip);
+
 		volume = 1.0f;
 	}
 

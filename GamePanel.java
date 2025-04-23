@@ -28,6 +28,7 @@ public class GamePanel extends JPanel implements Runnable {
 	private ImageFX imageFX1, imageFX2;
 	private ImageFX[] spawns;
 	private SoundManager soundManager;
+	private CutsceneManager cutsceneManager;
 	Random random= new Random();
 	int rand;
 	private int NUM_ENEMIES= 0;
@@ -53,7 +54,8 @@ public class GamePanel extends JPanel implements Runnable {
 		isRunning = false;
 		bullet= null;
 		health= null;
-		backgroundManager = new BackgroundManager("images/Background1.jpg", 400, 400);
+		backgroundManager = new BackgroundManager("images/Background2.png", 400, 400);
+		cutsceneManager = new CutsceneManager(this);
 	}
 
 	public void createGameEntities() {
@@ -82,21 +84,30 @@ public class GamePanel extends JPanel implements Runnable {
 		}
 	}
 
-	public void run () {
+	public void run() {
 		try {
 			isRunning = true;
 			while (isRunning) {
-				if(!isPaused)
+				if(!isPaused) {
 					gameUpdate();
+				}
+					
 				gameRender();
-				car.tick();
-				Thread.sleep (50);	
+				if (!cutsceneManager.isPlaying() && car != null) {
+					car.tick();
+				}
+				
+				Thread.sleep(50);	
 			}
 		}
 		catch(InterruptedException e) {}
 	}
 
 	public void gameUpdate() {
+		if (cutsceneManager.isPlaying()) {
+			cutsceneManager.update();
+			return;
+		}
 
 		if(!isPaused){
 			if(car != null) {
@@ -274,55 +285,60 @@ public class GamePanel extends JPanel implements Runnable {
 	public void gameRender() {
 		Graphics g = getGraphics ();
 		Graphics2D imageContext= (Graphics2D) image.getGraphics();
-		backgroundManager.draw(imageContext);
-		if (car != null) {
-			car.draw(imageContext);
-		}
 
-		if (opponents != null) {
-			for (int i=0; i<NUM_ENEMIES; i++){
-				if(spawns[i]!= null){
-					spawns[i].draw(imageContext);
-				}
-				if (opponents[i] != null){
-					opponents[i].draw(imageContext);
-				}
-				if(oppBullets[i]!= null){
-					oppBullets[i].draw(imageContext);
+		if (cutsceneManager.isPlaying()) {
+			cutsceneManager.draw(imageContext);
+		} else {
+			backgroundManager.draw(imageContext);
+			if (car != null) {
+				car.draw(imageContext);
+			}
+
+			if (opponents != null) {
+				for (int i=0; i<NUM_ENEMIES; i++){
+					if(spawns[i]!= null){
+						spawns[i].draw(imageContext);
+					}
+					if (opponents[i] != null){
+						opponents[i].draw(imageContext);
+					}
+					if(oppBullets[i]!= null){
+						oppBullets[i].draw(imageContext);
+					}
 				}
 			}
-		}
 
-		if(kamikaze!= null){
-			kamikaze.draw(imageContext);
-		}
-		
-		if(bullet!= null){
-			bullet.draw(imageContext);
-		}
+			if(kamikaze!= null){
+				kamikaze.draw(imageContext);
+			}
+			
+			if(bullet!= null){
+				bullet.draw(imageContext);
+			}
 
-		if(imageFX1!= null){
-			imageFX1.draw(imageContext);
-		}
+			if(imageFX1!= null){
+				imageFX1.draw(imageContext);
+			}
 
-		if(imageFX2!= null){
-			imageFX2.draw(imageContext);
-		}
+			if(imageFX2!= null){
+				imageFX2.draw(imageContext);
+			}
 
-		if(rotate!= null){
-			rotate.draw(imageContext);
-		}
+			if(rotate!= null){
+				rotate.draw(imageContext);
+			}
 
-		if(animation!= null){
-			animation.draw(imageContext);
-		}
+			if(animation!= null){
+				animation.draw(imageContext);
+			}
 
-		if(animation2!= null){
-			animation2.draw(imageContext);
-		}
+			if(animation2!= null){
+				animation2.draw(imageContext);
+			}
 
-		if(health!= null){
-			health.draw(imageContext);
+			if(health!= null){
+				health.draw(imageContext);
+			}
 		}
 
 		Graphics2D g2= (Graphics2D) getGraphics();
@@ -371,5 +387,9 @@ public class GamePanel extends JPanel implements Runnable {
 				return true;
 		}
 		return false;
+	}
+
+	public void playCutscene() {
+		cutsceneManager.startCutscene();
 	}
 }
