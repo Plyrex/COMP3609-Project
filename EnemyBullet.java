@@ -16,8 +16,8 @@ public class EnemyBullet {
    private int width;
    private int height;
 
-   Ellipse2D.Double bullet;	// ellipse drawn for bullet
-   Double hitBox;	// ellipse drawn for bullet
+   // Ellipse2D.Double bullet;	// ellipse drawn for bullet
+   // Double hitBox;	// ellipse drawn for bullet
 
    private int dx;		// increment to move along x-axis
    private int dy;		// increment to move along y-axis

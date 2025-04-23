@@ -1,10 +1,12 @@
 import javax.swing.JPanel;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.Random;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,6 +21,8 @@ public class GamePanel extends JPanel implements Runnable {
 	private Kamikaze kamikaze;
 	private Bullet bullet;
 	private EnemyBullet[] oppBullets;
+	private List<Bullet> bullets;
+	private List<EnemyBullet> enemyBullets;
 	private boolean isRunning;
 	private boolean isPaused;
 	private BackgroundManager backgroundManager;
@@ -40,7 +44,12 @@ public class GamePanel extends JPanel implements Runnable {
 	private HealthPickup health;
 	private RotateFX rotate;
 
+	private static final int VIEW_WIDTH= 800;
+	private static final int VIEW_HEIGHT= 600;
+	private static final double ZOOM= 2.0;
+
 	public GamePanel () {
+		// setPreferredSize(new Dimension(VIEW_WIDTH, VIEW_HEIGHT));
 		soundManager= SoundManager.getInstance();
 		scoringPanel= new ScoringPanel();
 		lifePanel= new LifePanel();
@@ -56,8 +65,10 @@ public class GamePanel extends JPanel implements Runnable {
 		isRunning = false;
 		bullet= null;
 		health= null;
-		backgroundManager = new BackgroundManager("images/Background2.png", 400, 400);
+		backgroundManager = new BackgroundManager("images/Background2.png", VIEW_WIDTH, VIEW_HEIGHT);
 		cutsceneManager = new CutsceneManager(this);
+		bullets = new ArrayList<>();
+      	enemyBullets = new ArrayList<>();
 	}
 
 	public void createGameEntities() {
@@ -66,6 +77,9 @@ public class GamePanel extends JPanel implements Runnable {
 		animation= new StripAnimation("images/kaboom.gif", 6, false);
 		animation2= new StripAnimation("images/select.png", 4, true);
 		// rotate= new RotateFX(this, "images/health.png");
+
+		bullets.clear();
+      	enemyBullets.clear();
 	}
 
 	public void createOpponents(){
