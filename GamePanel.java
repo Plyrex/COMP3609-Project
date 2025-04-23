@@ -15,6 +15,7 @@ public class GamePanel extends JPanel implements Runnable {
    
 	private Car car;
 	private Opponent[] opponents;
+	private Enemy[] enemies;
 	private Kamikaze kamikaze;
 	private Bullet bullet;
 	private EnemyBullet[] oppBullets;
@@ -30,11 +31,11 @@ public class GamePanel extends JPanel implements Runnable {
 	private SoundManager soundManager;
 	private CutsceneManager cutsceneManager;
 	Random random= new Random();
-	int rand;
-	private int NUM_ENEMIES= 0;
+	int rand, type, move;
+	private int NUM_ENEMIES= 5;
 	private int kills= 0, powerupKills= 0;
 	private StripAnimation animation, animation2;
-	private int speed= 5;
+	private int speed= 2;
 	private int time, timeChange= 1;
 	private HealthPickup health;
 	private RotateFX rotate;
@@ -47,6 +48,7 @@ public class GamePanel extends JPanel implements Runnable {
 		image= new BufferedImage(400, 400, BufferedImage.TYPE_INT_ARGB);
 		car = null;
 		opponents = null;
+		enemies= null;
 		spawns= null;
 		oppBullets= null;
 		kamikaze= null;
@@ -63,23 +65,27 @@ public class GamePanel extends JPanel implements Runnable {
 		createOpponents();
 		animation= new StripAnimation("images/kaboom.gif", 6, false);
 		animation2= new StripAnimation("images/select.png", 4, true);
-		rotate= new RotateFX(this, "images/health.png");
+		// rotate= new RotateFX(this, "images/health.png");
 	}
 
 	public void createOpponents(){
-		opponents = new Opponent [NUM_ENEMIES];
+		// opponents = new Opponent [NUM_ENEMIES];
+		enemies= new Enemy[NUM_ENEMIES];
 		oppBullets= new EnemyBullet[NUM_ENEMIES];
-		spawns= new ImageFX[NUM_ENEMIES];
+		spawns= new ImageFX[NUM_ENEMIES]; 
 		for(int i=0; i<NUM_ENEMIES; i++){
 			rand= random.nextInt(400);
-			opponents[i] = new Opponent (this, rand, 10, car, i, speed);
+			if(random.nextInt(2)== 0)
+				enemies[i] = new Tank(this, rand, 10, car, i, speed);
+			else
+				enemies[i] = new Bandit(this, rand, 10, car, i, speed);
 		}
 		rand= random.nextInt(3);
 		speed+= 1;
 	}
 
 	public void checkOpponents(){
-		if(opponents== null){
+		if(enemies== null){
 			createOpponents();
 		}
 	}
@@ -119,8 +125,8 @@ public class GamePanel extends JPanel implements Runnable {
 				if(spawns[i]!= null){
 					spawns[i].update();
 				}
-				if (opponents[i] != null){
-					opponents[i].move();
+				if (enemies[i] != null){
+					enemies[i].move();
 				}
 				if(oppBullets[i]!= null){
 					oppBullets[i].shoot();
@@ -188,7 +194,7 @@ public class GamePanel extends JPanel implements Runnable {
 
 	public void killEnemy(int x, int y, int height, int width, int type, int enemy, int method){
 		if(type==0){
-			opponents[enemy]= null;
+			enemies[enemy]= null;
 			animation.start(x, y);
 			imageFX1= new DisintegrateFX(this, x, y, height, width, "images/opp.png");
 			kills+= 1;
@@ -294,19 +300,19 @@ public class GamePanel extends JPanel implements Runnable {
 				car.draw(imageContext);
 			}
 
-			if (opponents != null) {
-				for (int i=0; i<NUM_ENEMIES; i++){
-					if(spawns[i]!= null){
-						spawns[i].draw(imageContext);
-					}
-					if (opponents[i] != null){
-						opponents[i].draw(imageContext);
-					}
-					if(oppBullets[i]!= null){
-						oppBullets[i].draw(imageContext);
-					}
+		if (enemies != null) {
+			for (int i=0; i<NUM_ENEMIES; i++){
+				if(spawns[i]!= null){
+					spawns[i].draw(imageContext);
+				}
+				if (enemies[i] != null){
+					enemies[i].draw(imageContext);
+				}
+				if(oppBullets[i]!= null){
+					oppBullets[i].draw(imageContext);
 				}
 			}
+		}
 
 			if(kamikaze!= null){
 				kamikaze.draw(imageContext);
