@@ -4,12 +4,15 @@ import java.awt.Graphics2D;
 import java.util.LinkedList;
 import java.util.Iterator;
 import javax.swing.JFrame;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
 
 /**
     The TileMap class contains the data for a tile-based
     map, including Sprites. Each tile is a reference to an
     Image. Images are used multiple times in the tile map.
-    map.
 */
 
 public class TileMap {
@@ -22,64 +25,115 @@ public class TileMap {
     private int mapWidth, mapHeight;
     private int offsetY;
 
-    private LinkedList sprites;
+    private LinkedList<Sprite> sprites;
     private Car player;
 
-    BackgroundManager bgManager;
-
-    private JFrame window;
-    private Dimension dimension;
+    // Camera position
+    private double cameraX = 0;
+    private double cameraY = 0;
+    private double movementFactor = 2;
+    
+    // Array to store the different tile images
+    private Image[] tileImages;
 
     /**
         Creates a new TileMap with the specified width and
         height (in number of tiles) of the map.
     */
-    public TileMap(JFrame window, int width, int height) {
+    public TileMap(int width, int height, int screenWidth, int screenHeight) {
+        this.screenWidth = screenWidth;
+        this.screenHeight = screenHeight;
 
-	this.window = window;
-	dimension = window.getSize();
+        mapWidth = width;
+        mapHeight = height;
 
-	screenWidth = dimension.width;
-	screenHeight = dimension.height;
-
-	mapWidth = width;
-	mapHeight = height;
-
-        // get the y offset to draw all sprites and tiles
-
-       	offsetY = screenHeight - tilesToPixels(mapHeight);
-	System.out.println("offsetY: " + offsetY);
-
-	bgManager = new BackgroundManager (window, 12);
+        offsetY = screenHeight - tilesToPixels(mapHeight);
+        System.out.println("offsetY: " + offsetY);
 
         tiles = new Image[mapWidth][mapHeight];
-	player = new Player (window, this, bgManager);
-        sprites = new LinkedList();
+        sprites = new LinkedList<Sprite>();
 
-	Image playerImage = player.getImage();
-	int playerHeight = playerImage.getHeight(null);
-
-	int x, y;
-	// x = (dimension.width / 2) + TILE_SIZE;	// position player in middle of screen
-
-	x = 192;					// position player in 'random' location
-	y = dimension.height - (TILE_SIZE + playerHeight);
-
-        player.setX(x);
-        player.setY(y);
-
-	System.out.println("Player coordinates: " + x + "," + y);
-
+        loadTileImages();
+        generateMap();
     }
-
+    
+    /**
+     * Set the player reference
+     */
+    public void setPlayer(Car player) {
+        this.player = player;
+    }
+    
+    /**
+     * Loads and splits the tile images from the tileset file
+     */
+    private void loadTileImages() {
+        try {
+            BufferedImage tilesetImage = ImageIO.read(new File("tilemap/basic_tileset_and_assets_standard/terrain_tiles_v2.png"));
+            
+           //i saw this is how we can split it like a split animation so it do be workin (i think)
+            int tilesetWidth = tilesetImage.getWidth() / TILE_SIZE;
+            int tilesetHeight = tilesetImage.getHeight() / TILE_SIZE;
+            int totalTiles = tilesetWidth * tilesetHeight;
+            
+            tileImages = new Image[totalTiles];
+            
+            int tileIndex = 0;
+            for (int y = 0; y < tilesetHeight; y++) {
+                for (int x = 0; x < tilesetWidth; x++) {
+                    if (tileIndex < totalTiles) {
+                        tileImages[tileIndex] = tilesetImage.getSubimage(
+                            x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE
+                        );
+                        tileIndex++;
+                    }
+                }
+            }
+            
+            System.out.println("Loaded " + tileIndex + " tiles from tileset");
+        } catch (IOException e) {
+            System.err.println("Error loading tileset: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * Generates a simple map layout using the loaded tiles
+     */
+    private void generateMap() {
+        // This is a simple example - customize based on your game needs
+        
+        // Create sky
+        for (int x = 0; x < mapWidth; x++) {
+            for (int y = 0; y < mapHeight - 5; y++) {
+                // Use a sky tile (e.g., tile index 6)
+                tiles[x][y] = tileImages[6]; 
+            }
+        }
+        
+        // Create ground/road at the bottom
+        for (int x = 0; x < mapWidth; x++) {
+            // Use a ground tile (e.g., tile index 0)
+            tiles[x][mapHeight - 1] = tileImages[0]; 
+            tiles[x][mapHeight - 2] = tileImages[1];
+        }
+        
+        // Add some random obstacles or terrain features
+        for (int x = 0; x < mapWidth; x += 4) {
+            if (Math.random() < 0.4) {
+                int tileIndex = 2 + (int)(Math.random() * 4);
+                int y = mapHeight - 3 - (int)(Math.random() * 2);
+                tiles[x][y] = tileImages[tileIndex];
+            }
+        }
+    }
 
     /**
         Gets the width of this TileMap (number of pixels across).
     */
     public int getWidthPixels() {
-	return tilesToPixels(mapWidth);
+        return tilesToPixels(mapWidth);
     }
-
 
     /**
         Gets the width of this TileMap (number of tiles across).
@@ -88,17 +142,11 @@ public class TileMap {
         return mapWidth;
     }
 
-
     /**
         Gets the height of this TileMap (number of tiles down).
     */
     public int getHeight() {
         return mapHeight;
-    }
-
-
-    public int getOffsetY() {
-	return offsetY;
     }
 
     /**
@@ -117,7 +165,6 @@ public class TileMap {
         }
     }
 
-
     /**
         Sets the tile at the specified location.
     */
@@ -125,156 +172,78 @@ public class TileMap {
         tiles[x][y] = tile;
     }
 
-
-    /**
-        Gets an Iterator of all the Sprites in this map,
-        excluding the player Sprite.
-    */
-
-    public Iterator getSprites() {
-        return sprites.iterator();
-    }
-
     /**
         Class method to convert a pixel position to a tile position.
     */
-
     public static int pixelsToTiles(float pixels) {
         return pixelsToTiles(Math.round(pixels));
     }
 
-
     /**
         Class method to convert a pixel position to a tile position.
     */
-
     public static int pixelsToTiles(int pixels) {
         return (int)Math.floor((float)pixels / TILE_SIZE);
     }
 
-
     /**
         Class method to convert a tile position to a pixel position.
     */
-
     public static int tilesToPixels(int numTiles) {
         return numTiles * TILE_SIZE;
     }
 
     /**
-        Draws the specified TileMap.
-    */
-    public void draw(Graphics2D g2)
-    {
-        int mapWidthPixels = tilesToPixels(mapWidth);
+     * Move the map based on player velocity
+     */
+    public void moveMap(double velX, double velY) {
+        cameraX -= velX * movementFactor;
+        cameraY -= velY * movementFactor;
+        boundCamera();
+    }
+    
+    /**
+     * Ensure camera stays within map bounds
+     */
+    private void boundCamera() {
+        if (cameraX < 0) cameraX = 0;
+        if (cameraY < 0) cameraY = 0;
+        if (cameraX > mapWidth * TILE_SIZE - screenWidth) cameraX = mapWidth * TILE_SIZE - screenWidth;
+        if (cameraY > mapHeight * TILE_SIZE - screenHeight) cameraY = mapHeight * TILE_SIZE - screenHeight;
+    }
+    
+    /**
+     * Reset the camera position
+     */
+    public void reset() {
+        cameraX = 0;
+        cameraY = 0;
+    }
 
-        // get the scrolling position of the map
-        // based on player's position
+    public void draw(Graphics2D g2) {
+        int startX = pixelsToTiles((int)cameraX);
+        int startY = pixelsToTiles((int)cameraY);
 
-        int offsetX = screenWidth / 2 -
-            Math.round(player.getX()) - TILE_SIZE;
-        offsetX = Math.min(offsetX, 0);
-        offsetX = Math.max(offsetX, screenWidth - mapWidthPixels);
+        int endX = startX + pixelsToTiles(screenWidth) + 1;
+        int endY = startY + pixelsToTiles(screenHeight) + 1;
 
-/*
-        // draw black background, if needed
-        if (background == null ||
-            screenHeight > background.getHeight(null))
-        {
-            g.setColor(Color.black);
-            g.fillRect(0, 0, screenWidth, screenHeight);
-        }
-*/
-	// draw the background first
+        startX = Math.max(0, startX);
+        startY = Math.max(0, startY);
 
-	bgManager.draw (g2);
+        endX = Math.min(endX, mapWidth);
+        endY = Math.min(endY, mapHeight);
 
-        // draw the visible tiles
-
-        int firstTileX = pixelsToTiles(-offsetX);
-        int lastTileX = firstTileX + pixelsToTiles(screenWidth) + 1;
-        for (int y=0; y<mapHeight; y++) {
-            for (int x=firstTileX; x <= lastTileX; x++) {
+        for (int y = startY; y < endY; y++) {
+            for (int x = startX; x < endX; x++) {
                 Image image = getTile(x, y);
                 if (image != null) {
                     g2.drawImage(image,
-                        tilesToPixels(x) + offsetX,
-                        tilesToPixels(y) + offsetY,
+                        tilesToPixels(x) - (int)cameraX,
+                        tilesToPixels(y) - (int)cameraY,
+                        TILE_SIZE, TILE_SIZE,
                         null);
                 }
             }
         }
-
-
-        // draw player
-
-        g2.drawImage(player.getImage(),
-            Math.round(player.getX()) + offsetX,
-            Math.round(player.getY()), //+ offsetY,
-            null);
-
-/*
-        // draw sprites
-        Iterator i = map.getSprites();
-        while (i.hasNext()) {
-            Sprite sprite = (Sprite)i.next();
-            int x = Math.round(sprite.getX()) + offsetX;
-            int y = Math.round(sprite.getY()) + offsetY;
-            g.drawImage(sprite.getImage(), x, y, null);
-
-            // wake up the creature when it's on screen
-            if (sprite instanceof Creature &&
-                x >= 0 && x < screenWidth)
-            {
-                ((Creature)sprite).wakeUp();
-            }
-        }
-*/
-
     }
-
-
-    public void moveLeft() {
-	int x, y;
-	x = player.getX();
-	y = player.getY();
-
-	String mess = "Going left. x = " + x + " y = " + y;
-	System.out.println(mess);
-
-	player.move(1);
-
-    }
-
-
-    public void moveRight() {
-	int x, y;
-	x = player.getX();
-	y = player.getY();
-
-	String mess = "Going right. x = " + x + " y = " + y;
-	System.out.println(mess);
-
-	player.move(2);
-
-    }
-
-
-    public void jump() {
-	int x, y;
-	x = player.getX();
-	y = player.getY();
-
-	String mess = "Jumping. x = " + x + " y = " + y;
-	System.out.println(mess);
-
-	player.move(3);
-
-    }
-
-
-    public void update() {
-	player.update();
-    }
-
 }

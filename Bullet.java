@@ -1,125 +1,85 @@
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.geom.Rectangle2D.Double;
 import java.awt.Image;
+import java.awt.geom.Rectangle2D;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 
 public class Bullet {
+    private int x, y;
+    private int dx, dy;
+    private int size = 5;
+    private int speed = 10;
+    private GamePanel panel;
+    private Animation bulletAnimation;
+    private int bulletWidth;
+    private int bulletHeight;
 
-   private GamePanel panel;
-
-   private int x;
-   private int y;
-
-   private int width;
-   private int height;
-
-   Ellipse2D.Double bullet;	// ellipse drawn for bullet
-   Double hitBox;	// ellipse drawn for bullet
-
-   private int dx;		// increment to move along x-axis
-   private int dy;		// increment to move along y-axis
-
-   private Color backgroundColour;
-   private SoundManager soundManager;
-   private Image bulletImage;
-   private Car bat;
-
-   public Bullet (GamePanel p, int width, int xPos, int yPos, Car bat) {
-      panel = p;
-      backgroundColour = panel.getBackground ();
-
-      this.width = 15;
-      this.height = 15;
-
-      this.bat= bat;
-
-      x = xPos;
-      y = yPos;
-
-      setLocation(width, xPos, yPos);
-
-      dx = 0;			// no movement along x-axis
-      dy = 5;			// would like the alien to drop down
-
-      bulletImage= ImageManager.loadImage("images/bullet.png");
- 
-   }
-
-   
-   public void setLocation(int width, int x, int y) {
-      this.x= x+ (width/2) - 7;
-      this.y= y;
-   }
-
-   public void goAway(int x, int y) {
-      this.x= x;
-      this.y= y;
-   }
-
-   public void draw (Graphics2D imageContext) {
-      Graphics g = panel.getGraphics ();
-      Graphics2D g2 = (Graphics2D) g;
-
-      imageContext.drawImage(bulletImage, x, y, width, height, null);
-
-         // bullet = new Ellipse2D.Double(x, y, width, height);
-
-         // g2.setColor(Color.BLACK); 
-         // g2.fill(bullet);
-
-         // g2.setColor(Color.BLACK);	 
-         // g2.draw(bullet);
-
-         // g2.setColor(Color.BLACK);
-
-         
-
-      g.dispose();
-   }
-
-   public void erase() {
-        Graphics g = panel.getGraphics();
-        Graphics2D g2 = (Graphics2D) g;
-
-        g2.setColor (backgroundColour);
-        g2.fill (new Ellipse2D.Double (x, y, width, height));
-
-        g2.setColor (backgroundColour);
-        g2.draw (new Ellipse2D.Double (x, y, width, height));
-
-        g.dispose();
+    public Bullet(GamePanel panel, int width, int startX, int startY) {
+        this.panel = panel;
+        this.x = startX + width/2;
+        this.y = startY;
+        this.dx = 0;
+        this.dy = -speed;
+        
+        bulletWidth = size;
+        bulletHeight = size;
+        
+        try {
+            Image stripImage = ImageManager.loadImage("images/regular.png");
+            if (stripImage != null) {
+                int frameCount = 10;
+                int imgWidth = stripImage.getWidth(null);
+                int imgHeight = stripImage.getHeight(null);
+                
+                if (imgWidth > 0 && imgHeight > 0 && imgWidth >= frameCount) {
+                    bulletWidth = imgWidth / frameCount;
+                    bulletHeight = imgHeight;
+                    
+                    bulletAnimation = new Animation(true);
+                    for (int i = 0; i < frameCount; i++) {
+                        BufferedImage frame = new BufferedImage(bulletWidth, bulletHeight, BufferedImage.TYPE_INT_ARGB);
+                        Graphics2D g2d = frame.createGraphics();
+                        g2d.drawImage(stripImage, 
+                                    0, 0, bulletWidth, bulletHeight, 
+                                    i * bulletWidth, 0, (i + 1) * bulletWidth, bulletHeight, 
+                                    null);
+                        g2d.dispose();
+                        bulletAnimation.addFrame(frame, 100);
+                    }
+                    bulletAnimation.start();
+                }
+            } else {
+                System.out.println("Error: Bullet image not found."); //this was a copilot suggestion that i'll probably remove when i do enemies
+            }
+        } catch (Exception e) {
+            System.out.println("Error loading bullet image: " + e.getMessage()); //same here for this bc i used try/catch for the image loading
+        }
     }
-
-
-   public void shoot() {
-
-      if (!panel.isVisible ()) 
-         return;
-      
-      y = y - dy;
-
-      if (y <= 0) {
-         // this.erase();
-         panel.deleteBullet();
-      }
-
-   }
-
-   public boolean isOnAlien (int x, int y) {
-      if (bullet == null)
-      	  return false;
-
-      Rectangle2D.Double myRect = getBoundingRectangle();
-      
-      return myRect.contains(x, y);
-   }
-
-
-   public Rectangle2D.Double getBoundingRectangle() {
-      return new Rectangle2D.Double (x, y, width, height);
-   }
-
+    
+    public void shoot() {
+        x += dx;
+        y += dy;
+        
+        if(bulletAnimation != null) {
+            bulletAnimation.update();
+        }
+    }
+    
+    public void draw(Graphics2D g2) {
+        if (bulletAnimation != null && bulletAnimation.isStillActive()) {
+            g2.drawImage(bulletAnimation.getImage(), x - bulletWidth/2, y - bulletHeight/2, bulletWidth, bulletHeight, null);
+        } else {
+            g2.setColor(Color.YELLOW);
+            g2.fillOval(x - size/2, y - size/2, size, size);
+        }
+    }
+    
+    public boolean isOffScreen() {
+        return x < 0 || x > panel.getWidth() || y < 0 || y > panel.getHeight();
+    }
+    
+    public Rectangle2D.Double getBoundingRectangle() {
+        return new Rectangle2D.Double(x - bulletWidth/2, y - bulletHeight/2, bulletWidth, bulletHeight);
+    }
 }

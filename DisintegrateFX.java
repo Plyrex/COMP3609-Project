@@ -23,11 +23,11 @@ public class DisintegrateFX implements ImageFX {
 	int time, timeChange;				// to control when the image is grayed
 
 
-	public DisintegrateFX (GamePanel p, int xPos, int yPos, int height, int width, String name) {
+	public DisintegrateFX (GamePanel p, int xPos, int yPos, double height2, double width2, String name) {
 		panel = p;
 
-		HEIGHT= height;
-		WIDTH= width;
+		HEIGHT= (int) height2;
+		WIDTH= (int) width2;
 
 		Random random = new Random();
 		x = xPos;
