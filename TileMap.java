@@ -215,4 +215,24 @@ public class TileMap {
     public void addSprite(Sprite sprite) {
         sprites.add(sprite);
     }
+
+    public double getCameraY() {
+        return cameraY;
+    }
+
+    public double getCameraX() {
+        return cameraX;
+    }
+
+    public void setCameraPosition(double x, double y) {
+        this.cameraX = x;
+        this.cameraY = y;
+        boundCamera();
+    }
+
+    public void centerOn(int x, int y) {
+        cameraX = x - (screenWidth / 2);
+        cameraY = y - (screenHeight / 2);
+        boundCamera();
+    }
 }

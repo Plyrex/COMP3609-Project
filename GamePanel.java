@@ -440,6 +440,7 @@ public class GamePanel extends JPanel implements Runnable {
         try {
             tileMap = tileMapManager.loadMap("maps/level1.map");
             tileMap.setPlayer(car);
+            cutsceneManager.setTileMap(tileMap);
         } catch (IOException e) {
             System.err.println("Error loading map: " + e.getMessage());
             tileMap = new TileMap(20, 15, getWidth(), getHeight());
@@ -484,8 +485,8 @@ public class GamePanel extends JPanel implements Runnable {
         return false;
     }
 
-    public void playCutscene() {
-        cutsceneManager.startCutscene();
+    public void playCutscene(String name) {
+        cutsceneManager.startCutscene(name);
     }
 
     public boolean isOffScreen(int x, int y) {
