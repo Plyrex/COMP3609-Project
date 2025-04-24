@@ -1,0 +1,6 @@
+SOURCES FOR THE .MAP FILE AND TILEMAPS IN GENERAL
+https://stackoverflow.com/questions/8611268/java-creating-a-2d-tile-map-in-a-panel-using-graphics2d-rectangles
+https://www.youtube.com/watch?v=ugzxCcpoSdE
+https://www.youtube.com/watch?v=qJpdRFvSj1A
+https://www.reddit.com/r/learnjava/comments/f1f452/looking_for_advice_on_2d_game_tilemap_rendering/?rdt=53273
+https://www.reddit.com/r/roguelikedev/comments/mx3wv0/data_structure_for_tile_map_java/

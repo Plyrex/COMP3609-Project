@@ -9,12 +9,6 @@ import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 
-/**
-    The TileMap class contains the data for a tile-based
-    map, including Sprites. Each tile is a reference to an
-    Image. Images are used multiple times in the tile map.
-*/
-
 public class TileMap {
 
     private static final int TILE_SIZE = 64;
@@ -28,12 +22,10 @@ public class TileMap {
     private LinkedList<Sprite> sprites;
     private Car player;
 
-    // Camera position
     private double cameraX = 0;
     private double cameraY = 0;
     private double movementFactor = 2;
     
-    // Array to store the different tile images
     private Image[] tileImages;
 
     /**
@@ -52,11 +44,12 @@ public class TileMap {
 
         tiles = new Image[mapWidth][mapHeight];
         sprites = new LinkedList<Sprite>();
-
-        loadTileImages();
-        generateMap();
     }
-    
+
+    public TileMap(JFrame window, int mapWidth, int mapHeight) {
+        this(mapWidth, mapHeight, window.getWidth(), window.getHeight());
+    }
+
     /**
      * Set the player reference
      */
@@ -64,14 +57,10 @@ public class TileMap {
         this.player = player;
     }
     
-    /**
-     * Loads and splits the tile images from the tileset file
-     */
-    private void loadTileImages() {
+    public void loadTileImages(String tilesetPath) {
         try {
-            BufferedImage tilesetImage = ImageIO.read(new File("tilemap/basic_tileset_and_assets_standard/terrain_tiles_v2.png"));
+            BufferedImage tilesetImage = ImageIO.read(new File(tilesetPath));
             
-           //i saw this is how we can split it like a split animation so it do be workin (i think)
             int tilesetWidth = tilesetImage.getWidth() / TILE_SIZE;
             int tilesetHeight = tilesetImage.getHeight() / TILE_SIZE;
             int totalTiles = tilesetWidth * tilesetHeight;
@@ -97,37 +86,13 @@ public class TileMap {
         }
     }
     
-    /**
-     * Generates a simple map layout using the loaded tiles
-     */
-    private void generateMap() {
-        // This is a simple example - customize based on your game needs
-        
-        // Create sky
-        for (int x = 0; x < mapWidth; x++) {
-            for (int y = 0; y < mapHeight - 5; y++) {
-                // Use a sky tile (e.g., tile index 6)
-                tiles[x][y] = tileImages[6]; 
-            }
+    public Image getTileImage(int index) {
+        if (index >= 0 && index < tileImages.length) {
+            return tileImages[index];
         }
-        
-        // Create ground/road at the bottom
-        for (int x = 0; x < mapWidth; x++) {
-            // Use a ground tile (e.g., tile index 0)
-            tiles[x][mapHeight - 1] = tileImages[0]; 
-            tiles[x][mapHeight - 2] = tileImages[1];
-        }
-        
-        // Add some random obstacles or terrain features
-        for (int x = 0; x < mapWidth; x += 4) {
-            if (Math.random() < 0.4) {
-                int tileIndex = 2 + (int)(Math.random() * 4);
-                int y = mapHeight - 3 - (int)(Math.random() * 2);
-                tiles[x][y] = tileImages[tileIndex];
-            }
-        }
+        return null;
     }
-
+    
     /**
         Gets the width of this TileMap (number of pixels across).
     */
@@ -245,5 +210,9 @@ public class TileMap {
                 }
             }
         }
+    }
+
+    public void addSprite(Sprite sprite) {
+        sprites.add(sprite);
     }
 }

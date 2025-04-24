@@ -10,6 +10,9 @@ import java.util.Random;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
+import java.io.IOException;
+import javax.swing.SwingUtilities;
+import javax.swing.JFrame;
 
 /**
    A component that displays all the game entities
@@ -27,6 +30,7 @@ public class GamePanel extends JPanel implements Runnable {
     private boolean isRunning;
     private boolean isPaused;
     private TileMap tileMap;
+    private TileMapManager tileMapManager;
     private BufferedImage image;
     private Thread gameThread;
     public ScoringPanel scoringPanel;
@@ -73,6 +77,10 @@ public class GamePanel extends JPanel implements Runnable {
         cutsceneManager = new CutsceneManager(this);
 
           tileMap = null;
+        tileMapManager = new TileMapManager(
+            (JFrame)SwingUtilities.getWindowAncestor(this), 
+            "tilemap/basic_tileset_and_assets_standard/terrain_tiles_v2.png"
+        );
     }
 
     public void createGameEntities() {
@@ -424,9 +432,27 @@ public class GamePanel extends JPanel implements Runnable {
         soundManager.playClip("background", true);
         isPaused = false;
         createGameEntities();
+        JFrame window = (JFrame)SwingUtilities.getWindowAncestor(this);
+        if (window != null) {
+            tileMapManager.setWindow(window);
+        }
         
-        tileMap = new TileMap(20, 15, getWidth(), getHeight());
-        tileMap.setPlayer(car);
+        try {
+            tileMap = tileMapManager.loadMap("maps/level1.map");
+            tileMap.setPlayer(car);
+        } catch (IOException e) {
+            System.err.println("Error loading map: " + e.getMessage());
+            tileMap = new TileMap(20, 15, getWidth(), getHeight());
+            tileMap.loadTileImages("tilemap/basic_tileset_and_assets_standard/terrain_tiles_v2.png");
+            tileMap.setPlayer(car);
+            for (int x = 0; x < tileMap.getWidth(); x++) {
+                for (int y = 0; y < tileMap.getHeight() - 2; y++) {
+                    tileMap.setTile(x, y, tileMap.getTileImage(6)); // Sky
+                }
+                tileMap.setTile(x, tileMap.getHeight() - 1, tileMap.getTileImage(0)); // Road
+                tileMap.setTile(x, tileMap.getHeight() - 2, tileMap.getTileImage(1)); // Grass
+            }
+        }
         
         gameThread = new Thread(this);			
         gameThread.start();
