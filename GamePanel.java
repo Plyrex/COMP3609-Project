@@ -239,6 +239,7 @@ public class GamePanel extends JPanel implements Runnable {
             if(health!= null)
                 health.move();
         }
+        car.tick();
     }
 
     public void updateRotate(int num){
