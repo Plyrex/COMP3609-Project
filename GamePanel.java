@@ -302,7 +302,7 @@ public class GamePanel extends JPanel implements Runnable {
     public void shootBullet() {
         if (car != null && !isPaused) {
             soundManager.playClip("shoot", false);
-            Bullet newBullet = new Bullet(this, car.getWidth(), car.getX(), car.getY());
+            Bullet newBullet = new Bullet(this,car.getHeight(), car.getWidth(), car.getX(), car.getY(), car.getDirection());
             bullets.add(newBullet);
         }
     }

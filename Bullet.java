@@ -9,19 +9,55 @@ public class Bullet {
     private int size = 12; // ADJUST FOR SIZE
     private int speed = 10;
     private GamePanel panel;
-    private Image bulletImage;
+    private Image bulletImage, bulletUpImage, bulletDownImage, bulletLeftImage, bulletRightImage;
+    private int carDirection;
 
-    public Bullet(GamePanel panel, int width, int startX, int startY) {
+    public Bullet(GamePanel panel, int height, int width, int startX, int startY, int direction) {
         this.panel = panel;
-        this.x = startX + width/2;
-        this.y = startY;
+
+        if(direction== 0){ //up
+            this.x = startX + width/2;
+            this.y = startY;
+        }else if(direction== 1){ //down
+            this.x = startX + width/2;
+            this.y = startY+ height;
+        }else if(direction== 2){ //left
+            this.x = startX;
+            this.y = startY+ height/2;
+        }else if(direction== 3){ //right
+            this.x = startX + width;
+            this.y = startY+ height/2;
+        }
+        
         this.dx = 0;
         this.dy = -speed;
+        this.carDirection= direction;
 
-        bulletImage = ImageManager.loadImage("images/enemyBullet.png");
+        this.bulletUpImage= ImageManager.loadImage("images/bulletUp.png");
+        this.bulletDownImage= ImageManager.loadImage("images/bulletDown.png");
+        this.bulletLeftImage= ImageManager.loadImage("images/bulletLeft.png");
+        this.bulletRightImage= ImageManager.loadImage("images/bulletRight.png");
+        this.bulletImage = bulletUpImage;
     }
 
     public void shoot() {
+        if(carDirection== 0){
+            dx=0;
+            dy= -speed;
+            bulletImage= bulletUpImage;
+        }else if(carDirection== 1){
+            dx=0;
+            dy= speed;
+            bulletImage= bulletDownImage;
+        }else if(carDirection== 2){
+            dx= -speed;
+            dy=0;
+            bulletImage= bulletLeftImage;
+        }else if(carDirection== 3){
+            dx= speed;
+            dy=0;
+            bulletImage= bulletRightImage;
+        }
         x += dx;
         y += dy;
     }

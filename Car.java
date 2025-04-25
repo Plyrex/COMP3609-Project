@@ -8,11 +8,13 @@ import java.awt.Image;
 
 
 public class Car {
-    private JPanel panel;
-    private int x;
-    private int y;
-    private int width;
-    private int height;
+
+   private JPanel panel;
+   private int x;
+   private int y;
+   private int width;
+   private int height;
+   private int direction= 0;
 
     private int dx;
     private int dy;
@@ -87,18 +89,21 @@ public class Car {
       
 		if (direction == 1) {			// going left
          carImage= carLeftImage;
+         setDirection(2);
          setVelX(+5);
          if (x < -width)
 	         x = panelWidth;
 		}
 		else if (direction == 2) {			// going right
          carImage= carRightImage;
+         setDirection(3);
          setVelX(-5);
          if (x > panelWidth)
             x = -width;
 		}
       else if(direction == 3){ //going up
          carImage= carUpImage;
+         setDirection(0);
          setVelY(+5);
          if (y <= 0){
 	         y = 0;
@@ -107,6 +112,7 @@ public class Car {
       }
       else if(direction == 4){ //going down
          carImage= carDownImage;
+         setDirection(1);
          setVelY(-5);
          if (this.y >= panelHeight - this.height){
             this.y = panelHeight - this.height;
@@ -158,4 +164,10 @@ public class Car {
       return velY;
    }
 
+   public void setDirection(int direction){
+      this.direction= direction;
+   }
+   public int getDirection(){
+      return direction;
+   }
 }
