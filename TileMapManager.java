@@ -77,6 +77,9 @@ public class TileMapManager {
     
     private int getTileIndexFromChar(char ch) {
         if (Character.isDigit(ch)) {
+            if (ch >= '1' && ch <= '8') {
+                return ch - '1';
+            }
             return ch - '0';
         }
         if (ch >= 'A' && ch <= 'Z') {

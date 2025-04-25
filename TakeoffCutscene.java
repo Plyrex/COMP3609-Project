@@ -20,7 +20,7 @@ public class TakeoffCutscene extends Cutscene {
 
     public TakeoffCutscene(GamePanel panel, TileMap tileMap) {
         super(panel, tileMap);
-        carImage = ImageManager.loadImage("images/car.png");
+        carImage = ImageManager.loadImage("images/playerUp.png");
         reset();
     }
 
@@ -30,10 +30,23 @@ public class TakeoffCutscene extends Cutscene {
         frameCount = 0;
         carScale = 1.0;
         cameraZoom = 1.0;
-        carX = tileMap.getWidth() * TileMap.tilesToPixels(1) / 2.0;
-        carY = tileMap.getHeight() * TileMap.tilesToPixels(1) - TileMap.tilesToPixels((int) 1.5);
 
-        tileMap.setCameraPosition(0, tileMap.getHeight() * TileMap.tilesToPixels(1) - tileMap.getHeight());
+        int[] runway = tileMap.findRunwayCenter();
+        if (runway != null) {
+            int centerX = runway[0];
+            int startY = runway[1];
+            int endY = runway[2];
+            carX = TileMap.tilesToPixels(centerX) + 64 / 2.0;
+            carY = TileMap.tilesToPixels(endY) - 64 / 2.0;
+            tileMap.setCameraPosition(
+                carX - tileMap.getScreenWidth() / 2,
+                carY - tileMap.getScreenHeight() / 2
+            );
+        } else {
+            carX = tileMap.getWidth() * TileMap.tilesToPixels(1) / 2.0;
+            carY = tileMap.getHeight() * TileMap.tilesToPixels(1) - TileMap.tilesToPixels((int) 1.5);
+            tileMap.setCameraPosition(0, tileMap.getHeight() * TileMap.tilesToPixels(1) - tileMap.getHeight());
+        }
         cameraYTarget = 0; 
         isPlaying = false;
         isDone = false;
@@ -51,9 +64,12 @@ public class TakeoffCutscene extends Cutscene {
                 soundManager.playClip("engine", false);
             }
         } else if (currentState == TAKE_OFF) {
-            carY -= 2;
-            tileMap.setCameraPosition(0, carY - tileMap.getHeight() / 2); 
-            if (carY < tileMap.getHeight() * TileMap.tilesToPixels(1) / 2) { 
+            carY -= 4;
+            tileMap.setCameraPosition(
+                carX - tileMap.getScreenWidth() / 2,
+                carY - tileMap.getScreenHeight() / 2
+            );
+            if (carY < tileMap.getScreenHeight() / 4) {
                 currentState = ENDING;
                 frameCount = 0;
             }
@@ -73,7 +89,9 @@ public class TakeoffCutscene extends Cutscene {
         int carHeight = (int)(50 * carScale);
         int drawX = (int)(carX - tileMap.getCameraX() - carWidth / 2);
         int drawY = (int)(carY - tileMap.getCameraY() - carHeight / 2);
-        g2.drawImage(carImage, drawX, drawY, carWidth, carHeight, null);
+        if (carImage != null) {
+            g2.drawImage(carImage, drawX, drawY, carWidth, carHeight, null);
+        }
 
         if (currentState == ENDING) {
             float alpha = 1.0f - (frameCount / 30.0f);

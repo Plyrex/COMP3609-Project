@@ -193,14 +193,14 @@ public class TileMap {
         int startX = pixelsToTiles((int)cameraX);
         int startY = pixelsToTiles((int)cameraY);
 
-        int endX = startX + pixelsToTiles(screenWidth) + 1;
-        int endY = startY + pixelsToTiles(screenHeight) + 1;
+        int tilesWide = (int)Math.ceil((double)screenWidth / TILE_SIZE);
+        int tilesHigh = (int)Math.ceil((double)screenHeight / TILE_SIZE);
+
+        int endX = Math.min(startX + tilesWide + 2, mapWidth);
+        int endY = Math.min(startY + tilesHigh + 2, mapHeight);
 
         startX = Math.max(0, startX);
         startY = Math.max(0, startY);
-
-        endX = Math.min(endX, mapWidth);
-        endY = Math.min(endY, mapHeight);
 
         for (int y = startY; y < endY; y++) {
             for (int x = startX; x < endX; x++) {
@@ -239,4 +239,33 @@ public class TileMap {
         cameraY = y - (screenHeight / 2);
         boundCamera();
     }
+
+    public int[] findRunwayCenter() {
+        for (int x = 0; x < mapWidth - 1; x++) {
+            for (int y = 0; y < mapHeight; y++) {
+                Image left = getTile(x, y);
+                Image right = getTile(x + 1, y);
+                if (left == getTileImage(5) && right == getTileImage(6)) {
+                    int startY = y;
+                    int endY = y;
+                    while (endY + 1 < mapHeight &&
+                           getTile(x, endY + 1) == getTileImage(5) &&
+                           getTile(x + 1, endY + 1) == getTileImage(6)) {
+                        endY++;
+                    }
+                    int centerX = x + 0; 
+                    return new int[]{centerX, startY, endY};
+                }
+            }
+        }
+        return null;
+    }
+
+    public int getScreenWidth() {
+        return screenWidth;
+    }
+    public int getScreenHeight() {
+        return screenHeight;
+    }
 }
+

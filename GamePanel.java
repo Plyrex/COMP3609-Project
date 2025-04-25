@@ -51,6 +51,7 @@ public class GamePanel extends JPanel implements Runnable {
     private RotateFX rotate;
     private int currentLevel = 1;
     private static final int MAX_LEVEL = 3;
+    private treeveg Vageeta;
 
     private static final int VIEW_WIDTH= 800;
     private static final int VIEW_HEIGHT= 600;
@@ -398,6 +399,8 @@ public class GamePanel extends JPanel implements Runnable {
                 }
                 double cameraX = tileMap != null ? tileMap.getCameraX() : 0;
                 double cameraY = tileMap != null ? tileMap.getCameraY() : 0;
+                
+                Vageeta.draw(imageContext, cameraX, cameraY);
 
                 if (car != null) car.draw(imageContext, cameraX, cameraY);
                 for (Enemy e : enemies) if (e != null) e.draw(imageContext, cameraX, cameraY);
@@ -502,7 +505,7 @@ public class GamePanel extends JPanel implements Runnable {
         String tilesetPath;
         switch (level) { //unfortunately i did not continue the funny if else statmenets here bc switch is sm easier here
             case 1:
-                tilesetPath = "tilemap/basic_tileset_and_assets_standard/terrain_tiles_v2.png";
+                tilesetPath = "tilemap/level1.png";
                 break;
             case 2:
                 tilesetPath = "tilemap/basic_tileset_and_assets_standard/terrain_tiles_desert.png"; //idk something
@@ -523,6 +526,13 @@ public class GamePanel extends JPanel implements Runnable {
             tileMap = tileMapManager.loadMap(mapFile);
             tileMap.setPlayer(car);
             createOpponentsForLevel(level);
+            Vageeta = new treeveg(tileMap);
+
+            if (level == 1 && cutsceneManager != null) {
+                cutsceneManager.setTileMap(tileMap);
+                cutsceneManager.startCutscene("takeoff");
+            }
+
         } catch (IOException e) {
             System.err.println("Error loading map: " + e.getMessage());
         }
