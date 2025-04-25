@@ -128,9 +128,17 @@ public class Car {
       return car.contains(x, y);
    }
 
-   public Rectangle2D.Double getBoundingRectangle() {
-      return new Rectangle2D.Double (x, y, width, height);
-   }
+   public Rectangle2D.Double getBoundingRectangle() { //this took ne so skibidi long to figuyre out ffasbhfahfbhajs
+
+    int screenX = panel.getWidth() / 2 - width / 2;
+    int screenY = panel.getHeight() / 2 - height / 2;
+
+    TileMap tileMap = ((GamePanel)panel).getTileMap();
+    double cameraX = tileMap != null ? tileMap.getCameraX() : 0;
+    double cameraY = tileMap != null ? tileMap.getCameraY() : 0;
+    
+    return new Rectangle2D.Double(cameraX + screenX, cameraY + screenY, width, height);
+}
 
    public int getHeight(){
       return height;

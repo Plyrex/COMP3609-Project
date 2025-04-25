@@ -1,6 +1,7 @@
 import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -48,6 +49,8 @@ public class GamePanel extends JPanel implements Runnable {
     private int time, timeChange= 1;
     private HealthPickup health;
     private RotateFX rotate;
+    private int currentLevel = 1;
+    private static final int MAX_LEVEL = 3;
 
     private static final int VIEW_WIDTH= 800;
     private static final int VIEW_HEIGHT= 600;
@@ -87,7 +90,6 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void createGameEntities() {
         car = new Car (this, 200, 350);
-        createOpponents();
         animation= new StripAnimation("images/kaboom.gif", 6, false);
         animation2= new StripAnimation("images/select.png", 4, true);
         // rotate= new RotateFX(this, "images/health.png");
@@ -96,30 +98,10 @@ public class GamePanel extends JPanel implements Runnable {
           enemyBullets.clear();
     }
 
-    public void createOpponents(){
-        enemies= new Enemy[NUM_ENEMIES];
-        oppBullets= new EnemyBullet[NUM_ENEMIES];
-        spawns= new ImageFX[NUM_ENEMIES]; 
-        for(int i=0; i<NUM_ENEMIES; i++){
-            int minTileX = 5, minTileY = 5, maxTileX = 10, maxTileY = 10;
-            int minX = TileMap.tilesToPixels(minTileX);
-            int minY = TileMap.tilesToPixels(minTileY);
-            int maxX = TileMap.tilesToPixels(maxTileX);
-            int maxY = TileMap.tilesToPixels(maxTileY);
-            int randX = random.nextInt(maxX - minX) + minX;
-            int randY = random.nextInt(maxY - minY) + minY;
-            if(random.nextInt(2)== 0)
-                enemies[i] = new Tank(this, randX, randY, car, i, speed);
-            else
-                enemies[i] = new Bandit(this, randX, randY, car, i, speed);
-        }
-        rand= random.nextInt(3);
-        speed+= 1;
-    }
 
     public void checkOpponents(){
         if(enemies== null){
-            createOpponents();
+            createOpponentsForLevel(currentLevel);
         }
     }
 
@@ -254,6 +236,18 @@ public class GamePanel extends JPanel implements Runnable {
                 health.move();
         }
         car.tick();
+        //we use here for fuel tanfk shenangicans
+        boolean allEnemiesDefeated = true;
+        for (Enemy enemy : enemies) {
+            if (enemy != null) {
+                allEnemiesDefeated = false;
+                break;
+            }
+        }
+
+        if (allEnemiesDefeated) {
+            advanceToNextLevel();
+        }
     }
 
     public void updateRotate(int num){
@@ -280,9 +274,14 @@ public class GamePanel extends JPanel implements Runnable {
         animation2.stop();
     }
 
-    public void destroyed(int x, int y, int height, int width){
-        animation.start(x, y);
-        imageFX2= new DisintegrateFX(this, x, y, height, width, "images/car.png");
+    public void destroyed(int x, int y, int height, int width){ //SNAHYBUIDFBAYUSFGYAUSGVBTUYASVTFYAUVSGTFAYTSVFTYGAVYDVAUT
+
+        int screenCenterX = getWidth() / 2 - width / 2;
+        int screenCenterY = getHeight() / 2 - height / 2;
+    
+        animation.start(screenCenterX, screenCenterY);
+        
+        imageFX2 = new DisintegrateFX(this, screenCenterX, screenCenterY, height, width, "images/car.png");
         car.goAway(200, 350);
     }
 
@@ -411,6 +410,11 @@ public class GamePanel extends JPanel implements Runnable {
                 if(animation != null) animation.draw(imageContext);
                 if(animation2 != null) animation2.draw(imageContext);
                 if(health != null) health.draw(imageContext);
+
+                Font levelFont = new Font("Arial", Font.BOLD, 16);
+                imageContext.setFont(levelFont);
+                imageContext.setColor(Color.WHITE);
+                imageContext.drawString("LEVEL: " + currentLevel, 10, 20);
             }
             
             g2 = (Graphics2D) getGraphics();
@@ -421,40 +425,29 @@ public class GamePanel extends JPanel implements Runnable {
             if (imageContext != null) imageContext.dispose();
             if (g2 != null) g2.dispose();
         }
+
     }
 
     public void startGame() {				
-        if (isRunning)
-            return;
-
+        if (isRunning) return;
+        
         soundManager.setVolume("background", 0.7f);
         soundManager.playClip("background", true);
         isPaused = false;
-        createGameEntities();
+        currentLevel = 1; // Reset to level 1
+        
+        // Create car
+        car = new Car(this, 200, 350);
+        
         JFrame window = (JFrame)SwingUtilities.getWindowAncestor(this);
         if (window != null) {
             tileMapManager.setWindow(window);
         }
         
-        try {
-            tileMap = tileMapManager.loadMap("maps/level1.map");
-            tileMap.setPlayer(car);
-            cutsceneManager.setTileMap(tileMap);
-        } catch (IOException e) {
-            System.err.println("Error loading map: " + e.getMessage());
-            tileMap = new TileMap(20, 15, getWidth(), getHeight());
-            tileMap.loadTileImages("tilemap/basic_tileset_and_assets_standard/terrain_tiles_v2.png");
-            tileMap.setPlayer(car);
-            for (int x = 0; x < tileMap.getWidth(); x++) {
-                for (int y = 0; y < tileMap.getHeight() - 2; y++) {
-                    tileMap.setTile(x, y, tileMap.getTileImage(6)); // Sky
-                }
-                tileMap.setTile(x, tileMap.getHeight() - 1, tileMap.getTileImage(0)); // Road
-                tileMap.setTile(x, tileMap.getHeight() - 2, tileMap.getTileImage(1)); // Grass
-            }
-        }
+        // Load level 1
+        loadLevel(currentLevel);
         
-        gameThread = new Thread(this);			
+        gameThread = new Thread(this);
         gameThread.start();
     }
 
@@ -494,5 +487,124 @@ public class GamePanel extends JPanel implements Runnable {
 
     public TileMap getTileMap() {
         return tileMap;
+    }
+
+    public void advanceToNextLevel() {
+        if (currentLevel < MAX_LEVEL) {
+            currentLevel++;
+            loadLevel(currentLevel);
+        } else {
+            endGame();
+        }
+    }
+
+    private void loadLevel(int level) {
+        String tilesetPath;
+        switch (level) { //unfortunately i did not continue the funny if else statmenets here bc switch is sm easier here
+            case 1:
+                tilesetPath = "tilemap/basic_tileset_and_assets_standard/terrain_tiles_v2.png";
+                break;
+            case 2:
+                tilesetPath = "tilemap/basic_tileset_and_assets_standard/terrain_tiles_desert.png"; //idk something
+                break;
+            case 3:
+                tilesetPath = "tilemap/basic_tileset_and_assets_standard/terrain_tiles_snow.png";
+                break;
+            default:
+                tilesetPath = "tilemap/basic_tileset_and_assets_standard/terrain_tiles_v2.png";
+        }
+        
+        tileMapManager = new TileMapManager(
+            (JFrame)SwingUtilities.getWindowAncestor(this), 
+            tilesetPath
+        );
+        try {
+            String mapFile = "maps/level" + level + ".map";
+            tileMap = tileMapManager.loadMap(mapFile);
+            tileMap.setPlayer(car);
+            createOpponentsForLevel(level);
+        } catch (IOException e) {
+            System.err.println("Error loading map: " + e.getMessage());
+        }
+    }
+
+    private void createOpponentsForLevel(int level) {
+        enemies = new Enemy[NUM_ENEMIES];
+        oppBullets = new EnemyBullet[NUM_ENEMIES];
+        spawns = new ImageFX[NUM_ENEMIES];
+
+        switch (level) { //no funny here bc it was easier for switch (maybe will replace with if else later toiday)
+                        //@saeed you can use here to fix the enemy spawning and add what you need to
+            case 1:
+                for (int i = 0; i < NUM_ENEMIES; i++) {
+                    spawnEnemyInWorldBounds(i, 5, 5, 10, 10, speed);
+                }
+                break;
+                
+            case 2:
+                speed += 2; 
+                for (int i = 0; i < NUM_ENEMIES; i++) {
+                    int enemyType = random.nextInt(10);
+                    if (enemyType < 7) { // 70% chance for Bandit
+                        spawnEnemyInWorldBounds(i, 3, 3, 15, 15, speed);
+                    } else { // 30% chance for Tank
+                        spawnEnemyInWorldBounds(i, 3, 3, 15, 15, speed);
+                    }
+                }
+                //replace kamikaze with whgatever we decide
+                kamikaze = new Kamikaze(this, random.nextInt(400), 50, car, 0);
+                break;
+                
+            case 3:
+
+                speed += 3;
+                for (int i = 0; i < NUM_ENEMIES; i++) {
+                    int enemyType = random.nextInt(10);
+                    if (enemyType < 3) { // 30% chance for Tank
+                        spawnEnemyInWorldBounds(i, 2, 2, 18, 18, speed);
+                    } else if (enemyType < 8) { // 50% chance for Bandit
+                        spawnEnemyInWorldBounds(i, 2, 2, 18, 18, speed);
+                    } else { 
+                        // enemies[i] = new Blimp(this, randX, randY, car, i, speed + 2);
+                        spawnEnemyInWorldBounds(i, 2, 2, 18, 18, speed);
+                    }
+                }
+                // replace with wahthever
+                kamikaze = new Kamikaze(this, random.nextInt(400), 50, car, 0);
+                break;
+        }
+    }
+
+    private void spawnEnemyInWorldBounds(int index, int minTileX, int minTileY, int maxTileX, int maxTileY, int speed) {
+        int minX = TileMap.tilesToPixels(minTileX); //my god i want to put down my computer I SFDNJAIFNIUAJBNSU
+        int minY = TileMap.tilesToPixels(minTileY); //the code was basically what i was doing in making things work with the world bounds and just having it all here but omgdfnsjk
+        int maxX = TileMap.tilesToPixels(maxTileX);
+        int maxY = TileMap.tilesToPixels(maxTileY);
+        int randX = random.nextInt(maxX - minX) + minX;
+        int randY = random.nextInt(maxY - minY) + minY;
+        
+        if (currentLevel == 1) {
+            if (random.nextInt(2) == 0)
+                enemies[index] = new Tank(this, randX, randY, car, index, speed);
+            else
+                enemies[index] = new Bandit(this, randX, randY, car, index, speed);
+        } 
+        else if (currentLevel == 2) {
+            if (random.nextInt(10) < 7)
+                enemies[index] = new Bandit(this, randX, randY, car, index, speed);
+            else
+                enemies[index] = new Tank(this, randX, randY, car, index, speed);
+        } 
+        else {
+            int type = random.nextInt(3);
+            if (type == 0)
+                enemies[index] = new Tank(this, randX, randY, car, index, speed + 1);
+            else if (type == 1)
+                enemies[index] = new Bandit(this, randX, randY, car, index, speed + 2);
+            else {
+                // enemies[index] = new Blimp(this, randX, randY, car, index, speed);
+                enemies[index] = new Tank(this, randX, randY, car, index, speed + 3);
+            }
+        }
     }
 }
