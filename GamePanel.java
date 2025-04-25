@@ -59,7 +59,9 @@ public class GamePanel extends JPanel implements Runnable {
         scoringPanel= new ScoringPanel();
         lifePanel= new LifePanel();
         lifePanel.setDoubleBuffered(true);
-        image= new BufferedImage(400, 400, BufferedImage.TYPE_INT_ARGB);
+        image = new BufferedImage(getWidth() > 0 ? getWidth() : 400, 
+                            getHeight() > 0 ? getHeight() : 400, 
+                            BufferedImage.TYPE_INT_ARGB);
         car = null;
         opponents = null;
         enemies= null;
@@ -95,16 +97,21 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void createOpponents(){
-        // opponents = new Opponent [NUM_ENEMIES];
         enemies= new Enemy[NUM_ENEMIES];
         oppBullets= new EnemyBullet[NUM_ENEMIES];
         spawns= new ImageFX[NUM_ENEMIES]; 
         for(int i=0; i<NUM_ENEMIES; i++){
-            rand= random.nextInt(400);
+            int minTileX = 5, minTileY = 5, maxTileX = 10, maxTileY = 10;
+            int minX = TileMap.tilesToPixels(minTileX);
+            int minY = TileMap.tilesToPixels(minTileY);
+            int maxX = TileMap.tilesToPixels(maxTileX);
+            int maxY = TileMap.tilesToPixels(maxTileY);
+            int randX = random.nextInt(maxX - minX) + minX;
+            int randY = random.nextInt(maxY - minY) + minY;
             if(random.nextInt(2)== 0)
-                enemies[i] = new Tank(this, rand, 10, car, i, speed);
+                enemies[i] = new Tank(this, randX, randY, car, i, speed);
             else
-                enemies[i] = new Bandit(this, rand, 10, car, i, speed);
+                enemies[i] = new Bandit(this, randX, randY, car, i, speed);
         }
         rand= random.nextInt(3);
         speed+= 1;
@@ -143,7 +150,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         if(!isPaused){
             if(car != null && tileMap != null) {
-                tileMap.moveMap(car.getVelX(), car.getVelY());
+                tileMap.centerOn(car.getX(), car.getY());
             }
 
             // WACK AHH bullet implememntation but we work
@@ -211,11 +218,18 @@ public class GamePanel extends JPanel implements Runnable {
                 if (enemies[i] != null){
                     enemies[i].move();
                     
-                    if (random.nextInt(100) < 2) { // 2% chance each update
+                if (random.nextInt(100) < 2) { // 2% chance each update
                         enemyShoot(i, enemies[i].getX(), enemies[i].getY(), 
                                 (int)enemies[i].getBoundingRectangle().width);
-                    }
                 }
+                }
+            }
+
+            while (bullets.size() > 50) {
+                bullets.remove(0);
+            }
+            while (enemyBullets.size() > 50) {
+                enemyBullets.remove(0);
             }
 
             if (kamikaze != null)
@@ -299,16 +313,25 @@ public class GamePanel extends JPanel implements Runnable {
         spawns[enemy]= null;
     }
 
-    public void shootBullet() {
+    public void shootBullet() { 
         if (car != null && !isPaused) {
             soundManager.playClip("shoot", false);
-            Bullet newBullet = new Bullet(this,car.getHeight(), car.getWidth(), car.getX(), car.getY(), car.getDirection());
+            int screenCenterX = getWidth() / 2;
+            int screenCenterY = getHeight() / 2;
+            
+            int bulletX = (int)tileMap.getCameraX() + screenCenterX;
+            int bulletY = (int)tileMap.getCameraY() + screenCenterY;
+            
+            Bullet newBullet = new Bullet(this, car.getHeight(), car.getWidth(), 
+                                         bulletX - car.getWidth()/2,
+                                         bulletY - car.getHeight()/2,
+                                         car.getDirection());
             bullets.add(newBullet);
         }
     }
 
     public void enemyShoot(int enemy, int x, int y, int width) {
-        if (car != null) {
+        if (car != null && enemies[enemy] != null) {
             EnemyBullet newEnemyBullet = new EnemyBullet(this, width, x, y, car, enemy);
             enemyBullets.add(newEnemyBullet);
         }
@@ -356,73 +379,48 @@ public class GamePanel extends JPanel implements Runnable {
         return lifePanel.getLifeTotal();
     }
 
-    public void gameRender() {
-        Graphics g = getGraphics();
-        Graphics2D imageContext = (Graphics2D) image.getGraphics();
-
-        if (cutsceneManager.isPlaying()) {
-            cutsceneManager.draw(imageContext);
-        } else {
-            if (tileMap != null) {
-                tileMap.draw(imageContext);
-            }
-            if (car != null) {
-                car.draw(imageContext);
-            }
-
-            if (enemies != null) {
-                for (int i=0; i<NUM_ENEMIES; i++){
-                    if(spawns[i]!= null){
-                        spawns[i].draw(imageContext);
-                    }
-                    if (enemies[i] != null){
-                        enemies[i].draw(imageContext);
-                    }
+    public void gameRender() { //I FIXED MFING GAME RENDER YEAAAAAAAAAAAA  https://jvm-gaming.org/t/best-way-to-render-with-java2d/45029
+                                //https://stackoverflow.com/questions/14922999/2d-graphics-rendering-in-java
+        if (image == null) return;
+        
+        Graphics2D imageContext = null;
+        Graphics2D g2 = null;
+        
+        try {
+            imageContext = (Graphics2D) image.getGraphics();
+            imageContext.setColor(Color.BLACK);
+            imageContext.fillRect(0, 0, image.getWidth(), image.getHeight());
+            
+            if (cutsceneManager.isPlaying()) {
+                cutsceneManager.draw(imageContext);
+            } else {
+                if (tileMap != null) {
+                    tileMap.draw(imageContext);
                 }
-            }
+                double cameraX = tileMap != null ? tileMap.getCameraX() : 0;
+                double cameraY = tileMap != null ? tileMap.getCameraY() : 0;
 
-            if(kamikaze!= null){
-                kamikaze.draw(imageContext);
+                if (car != null) car.draw(imageContext, cameraX, cameraY);
+                for (Enemy e : enemies) if (e != null) e.draw(imageContext, cameraX, cameraY);
+                for (Bullet b : bullets) b.draw(imageContext, cameraX, cameraY);
+                for (EnemyBullet eb : enemyBullets) eb.draw(imageContext, cameraX, cameraY);
+
+                if(imageFX1 != null) imageFX1.draw(imageContext); //I SAW THIS SICK AAH WAY TO WRITE THIS INSTEAD OF HOW LONG IT USUALLY IS
+                if(imageFX2 != null) imageFX2.draw(imageContext);
+                if(rotate != null) rotate.draw(imageContext);
+                if(animation != null) animation.draw(imageContext);
+                if(animation2 != null) animation2.draw(imageContext);
+                if(health != null) health.draw(imageContext);
             }
             
-            for (Bullet b : bullets) {
-                b.draw(imageContext);
+            g2 = (Graphics2D) getGraphics();
+            if (g2 != null) {
+                g2.drawImage(image, 0, 0, getWidth(), getHeight(), null);
             }
-            
-            for (EnemyBullet eb : enemyBullets) {
-                eb.draw(imageContext);
-            }
-
-            if(imageFX1!= null){
-                imageFX1.draw(imageContext);
-            }
-
-            if(imageFX2!= null){
-                imageFX2.draw(imageContext);
-            }
-
-            if(rotate!= null){
-                rotate.draw(imageContext);
-            }
-
-            if(animation!= null){
-                animation.draw(imageContext);
-            }
-
-            if(animation2!= null){
-                animation2.draw(imageContext);
-            }
-
-            if(health!= null){
-                health.draw(imageContext);
-            }
+        } finally {
+            if (imageContext != null) imageContext.dispose();
+            if (g2 != null) g2.dispose();
         }
-
-        Graphics2D g2= (Graphics2D) getGraphics();
-        g2.drawImage(image, 0, 0, 400, 400, null);
-
-        imageContext.dispose();
-        g2.dispose();
     }
 
     public void startGame() {				
@@ -492,5 +490,9 @@ public class GamePanel extends JPanel implements Runnable {
 
     public boolean isOffScreen(int x, int y) {
         return x < 0 || x > getWidth() || y < 0 || y > getHeight();
+    }
+
+    public TileMap getTileMap() {
+        return tileMap;
     }
 }

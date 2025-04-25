@@ -40,11 +40,13 @@ public abstract class Enemy implements EntityInterface{
         dx+= 2;
     };
 
-    public void draw(Graphics2D imageConxtext){
+    public void draw(Graphics2D imageConxtext,  double cameraX, double cameraY){
+        int drawX = (int)(x - cameraX);
+        int drawY = (int)(y - cameraY);
         Graphics g = panel.getGraphics ();
         Graphics2D g2 = (Graphics2D) g;
 
-        imageConxtext.drawImage(alienImage, x, y, width, height, null);
+        imageConxtext.drawImage(alienImage, drawX, drawY, width, height, null);
         g.dispose();
     };
 

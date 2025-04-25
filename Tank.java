@@ -1,3 +1,5 @@
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.Random;
 
 public class Tank extends Enemy{
@@ -43,7 +45,8 @@ public class Tank extends Enemy{
         x = random.nextInt (panelWidth - width);
         y = random.nextInt(panelHeight- height);
         dx+= 2;
-    };
+    }
+    
 
     // public void move() {
     //     int height = panel.getHeight();

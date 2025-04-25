@@ -3,7 +3,7 @@ import java.awt.geom.Rectangle2D;
 
 public interface EntityInterface{
     void setLocation();
-    void draw(Graphics2D imageConxtext);
+    void draw(Graphics2D imageConxtext, double cameraX, double cameraY);
     void erase();
     void shoot();
     void move();

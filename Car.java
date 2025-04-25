@@ -28,9 +28,6 @@ public class Car {
     private Image batRightImage;
     private Image carImage, carUpImage, carLeftImage, carRightImage, carDownImage;
     private SoundManager soundManager;
- 
-    private int screenX;
-    private int screenY;
 
     public Car (JPanel p, int xPos, int yPos) {
         panel = p;
@@ -38,9 +35,6 @@ public class Car {
         
         x = xPos;
         y = yPos;
-        
-        screenX = panel.getWidth() / 2 - width / 2;
-        screenY = panel.getHeight() / 2 - height / 2;
         
         dx = 5;
         dy = 5;
@@ -58,8 +52,10 @@ public class Car {
         this.x= x;
         this.y= y;
     }
-    public void draw (Graphics2D imageContext) {
-        imageContext.drawImage(carImage, screenX, screenY, width, height, null);
+    public void draw(Graphics2D g2, double cameraX, double cameraY) {
+        int screenX = (int)(panel.getWidth() / 2 - width / 2);
+        int screenY = (int)(panel.getHeight() / 2 - height / 2);
+        g2.drawImage(carImage, screenX, screenY, width, height, null);
     }
 
 
@@ -80,46 +76,50 @@ public class Car {
         y+= velY;
     }
 
-	public void move (int direction) {
-
-		if (!panel.isVisible ()) return;
-
-      int panelWidth = panel.getWidth();
-      int panelHeight = panel.getHeight();
-      
-		if (direction == 1) {			// going left
-         carImage= carLeftImage;
-         setDirection(2);
-         setVelX(+5);
-         if (x < -width)
-	         x = panelWidth;
-		}
-		else if (direction == 2) {			// going right
-         carImage= carRightImage;
-         setDirection(3);
-         setVelX(-5);
-         if (x > panelWidth)
-            x = -width;
-		}
-      else if(direction == 3){ //going up
-         carImage= carUpImage;
-         setDirection(0);
-         setVelY(+5);
-         if (y <= 0){
-	         y = 0;
+	public void move(int direction) {
+    if (!panel.isVisible()) return;
+    
+    TileMap tileMap = ((GamePanel)panel).getTileMap();
+    int worldWidth = tileMap != null ? tileMap.getWidthPixels() : panel.getWidth();
+    int worldHeight = tileMap != null ? tileMap.tilesToPixels(tileMap.getHeight()) : panel.getHeight();
+    
+    if (direction == 1) {
+        carImage = carLeftImage;
+        setDirection(2);
+        setVelX(-5);
+        if (x <= 0) {
+            x = 0;
+            setVelX(0);
+        }
+    }
+    else if (direction == 2) {
+        carImage = carRightImage;
+        setDirection(3);
+        setVelX(5);
+        if (x >= worldWidth - width) {
+            x = worldWidth - width;
+            setVelX(0);
+        }
+    }
+    else if(direction == 3) {
+        carImage = carUpImage;
+        setDirection(0);
+        setVelY(-5);
+        if (y <= 0) {
+            y = 0;
             setVelY(0);
-         }
-      }
-      else if(direction == 4){ //going down
-         carImage= carDownImage;
-         setDirection(1);
-         setVelY(-5);
-         if (this.y >= panelHeight - this.height){
-            this.y = panelHeight - this.height;
+        }
+    }
+    else if(direction == 4) {
+        carImage = carDownImage;
+        setDirection(1);
+        setVelY(5);
+        if (y >= worldHeight - height) {
+            y = worldHeight - height;
             setVelY(0);
-         }
-      }
-	}
+        }
+    }
+}
 
    public boolean isOnCar(int x, int y) {
       if (car == null)

@@ -78,12 +78,14 @@ public class EnemyBullet {
         }
     }
     
-    public void draw(Graphics2D g2) {
+    public void draw(Graphics2D g2, double cameraX, double cameraY) {
+        int drawX = (int)(x - cameraX - size/2);
+        int drawY = (int)(y - cameraY - size/2);
         if (bulletAnimation != null && bulletAnimation.isStillActive()) {
-            g2.drawImage(bulletAnimation.getImage(), x - size/2, y - size/2, size, size, null);
+            g2.drawImage(bulletAnimation.getImage(), drawX, drawY, size, size, null);
         } else {
             g2.setColor(Color.RED);
-            g2.fillOval(x - size/2, y - size/2, size, size);
+            g2.fillOval(drawX, drawY, size, size);
         }
     }
     

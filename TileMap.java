@@ -173,8 +173,12 @@ public class TileMap {
     private void boundCamera() {
         if (cameraX < 0) cameraX = 0;
         if (cameraY < 0) cameraY = 0;
-        if (cameraX > mapWidth * TILE_SIZE - screenWidth) cameraX = mapWidth * TILE_SIZE - screenWidth;
-        if (cameraY > mapHeight * TILE_SIZE - screenHeight) cameraY = mapHeight * TILE_SIZE - screenHeight;
+
+        int maxX = Math.max(0, mapWidth * TILE_SIZE - screenWidth);
+        int maxY = Math.max(0, mapHeight * TILE_SIZE - screenHeight);
+        
+        if (cameraX > maxX) cameraX = maxX;
+        if (cameraY > maxY) cameraY = maxY;
     }
     
     /**
