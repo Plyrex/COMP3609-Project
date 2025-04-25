@@ -248,20 +248,6 @@ public class GameWindow extends JFrame
 
 	public void mouseClicked(MouseEvent e) {
 
-		// int x = e.getX();
-		// int y = e.getY();
-
-		// if (gamePanel.isOnCar(x, y)) {
-		// 	statusBarTF.setText ("Mouse click on bat!");
-		// 	statusBarTF.setBackground(Color.RED);
-		// }
-		// else {
-		// 	statusBarTF.setText ("");
-		// 	statusBarTF.setBackground(Color.CYAN);
-		// }
-
-		// mouseTF.setText("(" + x +", " + y + ")");
-
 	}
 
 
