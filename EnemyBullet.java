@@ -12,8 +12,7 @@ public class EnemyBullet {
     private int speed = 8; 
     private GamePanel panel;
     private Animation bulletAnimation;
-    private int bulletWidth;
-    private int bulletHeight;
+    private Image bulletImage;
     private int enemyIndex;
     
     public EnemyBullet(GamePanel panel, int width, int startX, int startY, Car target, int enemyIndex) {
@@ -37,37 +36,38 @@ public class EnemyBullet {
             this.dy = speed;
         }
         
-        bulletWidth = size;
-        bulletHeight = size;
+        bulletImage= ImageManager.loadImage("images/bulletUp.png");
+        // bulletWidth = size;
+        // bulletHeight = size;
         
-        try {
-            Image stripImage = ImageManager.loadImage("images/special.png");
-            if (stripImage != null) {
-                int frameCount = 4;
-                int imgWidth = stripImage.getWidth(null);
-                int imgHeight = stripImage.getHeight(null);
+        // try {
+        //     Image stripImage = ImageManager.loadImage("images/special.png");
+        //     if (stripImage != null) {
+        //         int frameCount = 4;
+        //         int imgWidth = stripImage.getWidth(null);
+        //         int imgHeight = stripImage.getHeight(null);
                 
-                if (imgWidth > 0 && imgHeight > 0 && imgWidth >= frameCount) { //THIS IS TO FIX AN ILLEGAL ARGUMENT EXCEPTION ARGHH
-                    bulletWidth = imgWidth / frameCount;
-                    bulletHeight = imgHeight;
+        //         if (imgWidth > 0 && imgHeight > 0 && imgWidth >= frameCount) { //THIS IS TO FIX AN ILLEGAL ARGUMENT EXCEPTION ARGHH
+        //             bulletWidth = imgWidth / frameCount;
+        //             bulletHeight = imgHeight;
                     
-                    bulletAnimation = new Animation(true);
-                    for (int i = 0; i < frameCount; i++) {
-                        BufferedImage frame = new BufferedImage(bulletWidth, bulletHeight, BufferedImage.TYPE_INT_ARGB);
-                        Graphics2D g2d = frame.createGraphics();
-                        g2d.drawImage(stripImage, 
-                                    0, 0, bulletWidth, bulletHeight, 
-                                    i * bulletWidth, 0, (i + 1) * bulletWidth, bulletHeight, 
-                                    null);
-                        g2d.dispose();
-                        bulletAnimation.addFrame(frame, 100);
-                    }
-                    bulletAnimation.start();
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace(); //incase of error bc cries
-        }
+        //             bulletAnimation = new Animation(true);
+        //             for (int i = 0; i < frameCount; i++) {
+        //                 BufferedImage frame = new BufferedImage(bulletWidth, bulletHeight, BufferedImage.TYPE_INT_ARGB);
+        //                 Graphics2D g2d = frame.createGraphics();
+        //                 g2d.drawImage(stripImage, 
+        //                             0, 0, bulletWidth, bulletHeight, 
+        //                             i * bulletWidth, 0, (i + 1) * bulletWidth, bulletHeight, 
+        //                             null);
+        //                 g2d.dispose();
+        //                 bulletAnimation.addFrame(frame, 100);
+        //             }
+        //             bulletAnimation.start();
+        //         }
+        //     }
+        // } catch (Exception e) {
+        //     e.printStackTrace(); //incase of error bc cries
+        // }
     }
 
     public void shoot() {
@@ -80,7 +80,7 @@ public class EnemyBullet {
     
     public void draw(Graphics2D g2) {
         if (bulletAnimation != null && bulletAnimation.isStillActive()) {
-            g2.drawImage(bulletAnimation.getImage(), x - bulletWidth/2, y - bulletHeight/2, bulletWidth, bulletHeight, null);
+            g2.drawImage(bulletAnimation.getImage(), x - size/2, y - size/2, size, size, null);
         } else {
             g2.setColor(Color.RED);
             g2.fillOval(x - size/2, y - size/2, size, size);
@@ -92,7 +92,7 @@ public class EnemyBullet {
     }
     
     public Rectangle2D.Double getBoundingRectangle() {
-        return new Rectangle2D.Double(x - bulletWidth/2, y - bulletHeight/2, bulletWidth, bulletHeight);
+        return new Rectangle2D.Double(x - size/2, y - size/2, size, size);
     }
     
     public int getEnemyIndex() {

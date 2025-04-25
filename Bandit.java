@@ -25,11 +25,23 @@ public class Bandit extends Enemy{
         this.oppBullet= null;
         
         soundManager = SoundManager.getInstance();
-        alienImage = ImageManager.loadImage ("images/kamikaze1.png");
+        imageUp= ImageManager.loadImage ("images/banditUp.png");
+        imageDown= ImageManager.loadImage ("images/banditDown.png");
+        imageLeft= ImageManager.loadImage ("images/banditLeft.png");
+        imageRight= ImageManager.loadImage ("images/banditRight.png");
+        alienImage = imageUp;
         imageFX1= null;
 
         rand= random.nextInt(4);
     }
+
+    public void setLocation(){
+        int panelWidth = panel.getWidth();
+        int panelHeight= panel.getHeight();
+        x = random.nextInt (panelWidth - width);
+        y = random.nextInt(panelHeight- height);
+        dx+= 2;
+    };
 
     public void move() {
         int height = panel.getHeight();
@@ -45,14 +57,22 @@ public class Bandit extends Enemy{
            lastShotTime= now;
            shotDelay= 2000+ random.nextInt(1000);
         }
-        if(rand== 0)
+        if(rand== 0){
+            alienImage= imageUp;
             y-=dy;
-        else if(rand== 1)
+        }
+        else if(rand== 1){
+            alienImage= imageDown;
             y+=dy;
-        else if(rand== 2)
+        }
+        else if(rand== 2){
+            alienImage= imageLeft;
             x-= dx;
-        else if(rand==3)
+        }
+        else if(rand==3){
+            alienImage= imageRight;
             x+= dx;
+        }
         
         rand1= random.nextInt(10);
         if(rand1>7)

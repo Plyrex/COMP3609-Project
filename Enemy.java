@@ -25,7 +25,7 @@ public abstract class Enemy implements EntityInterface{
     protected Bullet bullet;
     protected EnemyBullet oppBullet;
     protected SoundManager soundManager;
-    protected Image alienImage;
+    protected Image alienImage, imageUp, imageDown, imageLeft, imageRight;
     protected ImageFX imageFX1;
     protected int enemy_num; //keeps track of which enemy this is
     protected int rand, rand1;

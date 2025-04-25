@@ -47,10 +47,10 @@ public class Car {
         width = 50;
         height = 50;
 
-        carUpImage = ImageManager.loadImage ("images/car.png");
-        carLeftImage= ImageManager.loadImage ("images/carLeft.png");
-        carRightImage= ImageManager.loadImage ("images/carRight.png");
-        carDownImage= ImageManager.loadImage ("images/carDown.png");
+        carUpImage = ImageManager.loadImage ("images/playerUp.png");
+        carLeftImage= ImageManager.loadImage ("images/playerLeft.png");
+        carRightImage= ImageManager.loadImage ("images/playerRight.png");
+        carDownImage= ImageManager.loadImage ("images/playerDown.png");
         carImage= carUpImage;
     }
 
@@ -141,11 +141,11 @@ public class Car {
    }
 
    public int getX(){
-      return x;
+      return this.x;
    }
 
    public int getY(){
-      return y;
+      return this.y;
    }
 
    public void setVelX(double velX){

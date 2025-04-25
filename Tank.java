@@ -25,7 +25,7 @@ public class Tank extends Enemy{
         this.oppBullet= null;
         
         soundManager = SoundManager.getInstance();
-        alienImage = ImageManager.loadImage ("images/kamikaze.png");
+        alienImage = ImageManager.loadImage ("images/tank.png");
         imageFX1= null;
 
         rand= random.nextInt(2);
@@ -36,6 +36,14 @@ public class Tank extends Enemy{
         }
 
     }
+
+    public void setLocation(){
+        int panelWidth = panel.getWidth();
+        int panelHeight= panel.getHeight();
+        x = random.nextInt (panelWidth - width);
+        y = random.nextInt(panelHeight- height);
+        dx+= 2;
+    };
 
     // public void move() {
     //     int height = panel.getHeight();

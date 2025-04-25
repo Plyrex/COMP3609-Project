@@ -85,16 +85,6 @@ public class HealthPickup {
 
       imageContext.drawImage(alienImage, x, y, width, height, null);
 
-         // head = new Ellipse2D.Double(x, y, width, height);
-
-         // g2.setColor(Color.RED); 
-         // g2.fill(head);
-
-         // g2.setColor(Color.BLACK);	 
-         // g2.draw(head);
-
-         // g2.setColor(Color.BLACK);
-
       g.dispose();
    }
 
@@ -111,44 +101,12 @@ public class HealthPickup {
       g.dispose();
   }
 
-   // public void addBullet(Bullet bullet){
-   //    this.bullet= bullet;
-   // }
-
-   // public void shoot(){
-   //    if(!panel.enemyBulletExist(enemy_num))
-   //       panel.enemyShoot(enemy_num, this.x, this.y, this.width);
-   // }
-
    public void move() {
       int height = panel.getHeight();
       int width= panel.getWidth();
       boolean CarCollision = collidesWithCar();
-      // boolean BulletCollision= collidesWithBullet();
 
       if (!panel.isVisible ()) return;
-
-      // long now= System.currentTimeMillis();
-      // if(now - lastShotTime>= shotDelay){
-      //    shoot();
-      //    lastShotTime= now;
-      //    shotDelay= 2000+ random.nextInt(1000);
-      // }
-
-      // if(this.side){
-      //    if(x>= width - this.width){
-      //       y+= dy;
-      //       this.side= false;
-      //    }
-      //    x+= dx;
-      // }
-      // else if(!this.side){
-      //    x-= dx;
-      //    if(x<= 0){
-      //       y+= dy;
-      //       this.side= true;
-      //    }
-      // }
           
       if (CarCollision) {
          soundManager.playClip("pickup", false);
@@ -160,25 +118,6 @@ public class HealthPickup {
 
          panel.removeHealth();
       }
-
-      // if(BulletCollision){
-      //    soundManager.playClip("hit", false);
-         
-      //    // setLocation();
-      //    dx= 0;
-      //    dy= 0;
-      //    panel.addPoints(1);
-      //    // bullet.erase();
-      //    bullet= null;
-      //    panel.deleteBullet();
-      //    panel.killEnemy(x, y, this.height, this.width, 0, enemy_num);
-      // }
-
-      // if (y > height) {
-      //    panel.loseLife(3);
-      //    panel.destroyed(bat.getX(), bat.getY(), bat.getHeight(), bat.getWidth());
-      //    panel.endGame();
-      // }
 
    }
 
@@ -203,17 +142,6 @@ public class HealthPickup {
       
       return myRect.intersects(batRect); 
    }
-
-   // public boolean collidesWithBullet() {
-   //    Rectangle2D.Double myRect = getBoundingRectangle();
-   //    Rectangle2D.Double bulletRect = null;
-   //    if(bullet!= null){
-   //       bulletRect = bullet.getBoundingRectangle();
-   //       return myRect.intersects(bulletRect); 
-   //    }
-
-   //    return false;
-   // }
 
    public int getX(){
       return this.x;
