@@ -119,7 +119,7 @@ public class GamePanel extends JPanel implements Runnable {
                     car.tick();
                 }
                 
-                Thread.sleep(50);	
+                Thread.sleep(33); 
             }
         }
         catch(InterruptedException e) {}
@@ -600,6 +600,15 @@ public class GamePanel extends JPanel implements Runnable {
         int minY = TileMap.tilesToPixels(minTileY); //the code was basically what i was doing in making things work with the world bounds and just having it all here but omgdfnsjk
         int maxX = TileMap.tilesToPixels(maxTileX);
         int maxY = TileMap.tilesToPixels(maxTileY);
+
+        int mapWidthPx = tileMap.getWidthPixels();
+        int mapHeightPx = tileMap.tilesToPixels(tileMap.getHeight());
+        maxX = Math.min(maxX, mapWidthPx - 1);
+        maxY = Math.min(maxY, mapHeightPx - 1);
+
+        if (maxX <= minX) maxX = minX + 1;
+        if (maxY <= minY) maxY = minY + 1;
+
         int randX = random.nextInt(maxX - minX) + minX;
         int randY = random.nextInt(maxY - minY) + minY;
         
