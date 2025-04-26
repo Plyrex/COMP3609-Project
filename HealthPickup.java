@@ -38,7 +38,7 @@ public class HealthPickup {
    private boolean side;
    private long lastShotTime, shotDelay;
 
-   public HealthPickup (GamePanel p, Car bat) {
+   public HealthPickup (GamePanel p, Car bat, int x, int y) {
       panel = p;
       // dimension = panel.getSize();
       backgroundColour = panel.getBackground ();
@@ -48,8 +48,8 @@ public class HealthPickup {
 
       random = new Random();
 
-      x = random.nextInt(50, 301);
-      y = random.nextInt(100, 351);
+      this.x = x;
+      this.y = y;
 
       // setLocation();
 

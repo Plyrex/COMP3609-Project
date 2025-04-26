@@ -153,6 +153,8 @@ public class GamePanel extends JPanel implements Runnable {
                             soundManager.playClip("hit", false);
                             bullets.remove(i);
                             addPoints(1);
+                            health= new HealthPickup(this, car, enemies[j].getX(), enemies[j].getY());
+                            animation2.start(health.getX()-20, health.getY()-10);
                             killEnemy(enemies[j].getX(), enemies[j].getY(), 
                                     enemies[j].getBoundingRectangle().height, 
                                     enemies[j].getBoundingRectangle().width, 
@@ -289,14 +291,15 @@ public class GamePanel extends JPanel implements Runnable {
         if(type==0){
             enemies[enemy]= null;
             animation.start(x, y);
-            imageFX1= new DisintegrateFX(this, x, y, height, width, "images/opp.png");
+            imageFX1= new DisintegrateFX(this, x, y, height, width, "images/banditUp.png");
+            repaint();
             kills+= 1;
             if(method== 0)
                 powerupKills+= 1;
         }else if(type==1){
             kamikaze= null;
             animation.start(x, y);
-            imageFX1= new DisintegrateFX(this, x, y, height, width, "images/kamikaze1.png");
+            imageFX1= new DisintegrateFX(this, x, y, height, width, "images/tank.png");
             soundManager.stopClip ("kamikaze");
             if(method== 1)
                 powerupKills= -5;
@@ -540,7 +543,7 @@ public class GamePanel extends JPanel implements Runnable {
 
             if (level == 1 && cutsceneManager != null) {
                 cutsceneManager.setTileMap(tileMap);
-                cutsceneManager.startCutscene("takeoff");
+                // cutsceneManager.startCutscene("takeoff");
             }
 
         } catch (IOException e) {

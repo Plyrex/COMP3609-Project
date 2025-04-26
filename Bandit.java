@@ -103,8 +103,6 @@ public class Bandit extends Enemy{
               return;
            }
            // setLocation();
-           dx= 0;
-           dy= 0;
            panel.killEnemy(x, y, this.height, this.width, 0, enemy_num, 1);
            panel.destroyed(bat.getX(), bat.getY(), bat.getHeight(), bat.getWidth());
         }
