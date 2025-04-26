@@ -511,10 +511,10 @@ public class GamePanel extends JPanel implements Runnable {
                 tilesetPath = "tilemap/level1.png";
                 break;
             case 2:
-                tilesetPath = "tilemap/basic_tileset_and_assets_standard/terrain_tiles_desert.png"; //idk something
+                tilesetPath = "tilemap/level2.png"; //idk something
                 break;
             case 3:
-                tilesetPath = "tilemap/basic_tileset_and_assets_standard/terrain_tiles_snow.png";
+                tilesetPath = "tilemap/level3.png";
                 break;
             default:
                 tilesetPath = "tilemap/basic_tileset_and_assets_standard/terrain_tiles_v2.png";
