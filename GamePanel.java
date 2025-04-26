@@ -22,9 +22,7 @@ import javax.swing.JFrame;
 public class GamePanel extends JPanel implements Runnable {
    
     private Car car;
-    private Opponent[] opponents;
     private Enemy[] enemies;
-    private Kamikaze kamikaze;
     private EnemyBullet[] oppBullets;
     private List<Bullet> bullets;
     private List<EnemyBullet> enemyBullets;
@@ -42,7 +40,7 @@ public class GamePanel extends JPanel implements Runnable {
     private CutsceneManager cutsceneManager;
     Random random= new Random();
     int rand, type, move;
-    private int NUM_ENEMIES= 5;
+    private int NUM_ENEMIES= 2;
     private int kills= 0, powerupKills= 0;
     private StripAnimation animation, animation2;
     private int speed= 2;
@@ -67,11 +65,9 @@ public class GamePanel extends JPanel implements Runnable {
                             getHeight() > 0 ? getHeight() : 400, 
                             BufferedImage.TYPE_INT_ARGB);
         car = null;
-        opponents = null;
         enemies= null;
         spawns= null;
         oppBullets= null;
-        kamikaze= null;
         gameThread = null;
         isRunning = false;
         health= null;
@@ -164,15 +160,6 @@ public class GamePanel extends JPanel implements Runnable {
                         }
                     }
                 }
-                if (!hitSomething && kamikaze != null && bulletRect.intersects(kamikaze.getBoundingRectangle())) {
-                    soundManager.playClip("hit", false);
-                    bullets.remove(i);
-                    addPoints(1);
-                    killEnemy(kamikaze.getX(), kamikaze.getY(), 
-                            (int)kamikaze.getBoundingRectangle().height, 
-                            (int)kamikaze.getBoundingRectangle().width, 
-                            1, 0, 0);
-                }
             }
 
             for (int i = enemyBullets.size() - 1; i >= 0; i--) {
@@ -216,9 +203,6 @@ public class GamePanel extends JPanel implements Runnable {
             while (enemyBullets.size() > 50) {
                 enemyBullets.remove(0);
             }
-
-            if (kamikaze != null)
-                kamikaze.move();
             
             if(imageFX1!= null)
                 imageFX1.update();
@@ -297,7 +281,6 @@ public class GamePanel extends JPanel implements Runnable {
             if(method== 0)
                 powerupKills+= 1;
         }else if(type==1){
-            kamikaze= null;
             animation.start(x, y);
             imageFX1= new DisintegrateFX(this, x, y, height, width, "images/tank.png");
             soundManager.stopClip ("kamikaze");
@@ -477,14 +460,6 @@ public class GamePanel extends JPanel implements Runnable {
         return car.isOnCar(x, y);
     }
 
-    public boolean isOnOpponent(int x, int y) {
-        for (int i=0; i<NUM_ENEMIES; i++) {
-            if (opponents[i].isOnOpponent(x, y))
-                return true;
-        }
-        return false;
-    }
-
     public void playCutscene(String name) {
         cutsceneManager.startCutscene(name);
     }
@@ -575,7 +550,7 @@ public class GamePanel extends JPanel implements Runnable {
                     }
                 }
                 //replace kamikaze with whgatever we decide
-                kamikaze = new Kamikaze(this, random.nextInt(400), 50, car, 0);
+                // kamikaze = new Kamikaze(this, random.nextInt(400), 50, car, 0);
                 break;
                 
             case 3:
@@ -593,7 +568,7 @@ public class GamePanel extends JPanel implements Runnable {
                     }
                 }
                 // replace with wahthever
-                kamikaze = new Kamikaze(this, random.nextInt(400), 50, car, 0);
+                // kamikaze = new Kamikaze(this, random.nextInt(400), 50, car, 0);
                 break;
         }
     }
