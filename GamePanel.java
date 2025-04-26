@@ -201,7 +201,7 @@ public class GamePanel extends JPanel implements Runnable {
                 if (enemies[i] != null){
                     enemies[i].move();
                     
-                if (random.nextInt(100) < 2) { // 2% chance each update
+                if (random.nextInt(100) < 0.5) { 
                         enemyShoot(i, enemies[i].getX(), enemies[i].getY(), 
                                 (int)enemies[i].getBoundingRectangle().width);
                 }
