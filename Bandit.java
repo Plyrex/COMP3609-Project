@@ -15,7 +15,7 @@ public class Bandit extends Enemy{
         y = yPos;
 
         enemy_num= enemy;
-        setLocation();
+        //setLocation();
 
         dx = speed;			// move side to side
         dy = speed;			// would like to drop down after hitting wall

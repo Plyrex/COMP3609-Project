@@ -596,44 +596,39 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void spawnEnemyInWorldBounds(int index, int minTileX, int minTileY, int maxTileX, int maxTileY, int speed) {
-        int minX = TileMap.tilesToPixels(minTileX); //my god i want to put down my computer I SFDNJAIFNIUAJBNSU
-        int minY = TileMap.tilesToPixels(minTileY); //the code was basically what i was doing in making things work with the world bounds and just having it all here but omgdfnsjk
-        int maxX = TileMap.tilesToPixels(maxTileX);
-        int maxY = TileMap.tilesToPixels(maxTileY);
+    int mapWidthTiles = tileMap.getWidth();//my god i want to put down my computer I SFDNJAIFNIUAJBNSU
+    int mapHeightTiles = tileMap.getHeight();//the code was basically what i was doing in making things work with the world bounds and just having it all here but omgdfnsjk
 
-        int mapWidthPx = tileMap.getWidthPixels();
-        int mapHeightPx = tileMap.tilesToPixels(tileMap.getHeight());
-        maxX = Math.min(maxX, mapWidthPx - 1);
-        maxY = Math.min(maxY, mapHeightPx - 1);
+    int minX = 0;
+    int minY = 0;
+    int maxX = TileMap.tilesToPixels(mapWidthTiles) - 1;
+    int maxY = TileMap.tilesToPixels(mapHeightTiles) - 1;
 
-        if (maxX <= minX) maxX = minX + 1;
-        if (maxY <= minY) maxY = minY + 1;
+    int randX = random.nextInt(maxX - minX) + minX;
+    int randY = random.nextInt(maxY - minY) + minY;
 
-        int randX = random.nextInt(maxX - minX) + minX;
-        int randY = random.nextInt(maxY - minY) + minY;
-        
-        if (currentLevel == 1) {
-            if (random.nextInt(2) == 0)
-                enemies[index] = new Tank(this, randX, randY, car, index, speed);
-            else
-                enemies[index] = new Bandit(this, randX, randY, car, index, speed);
-        } 
-        else if (currentLevel == 2) {
-            if (random.nextInt(10) < 7)
-                enemies[index] = new Bandit(this, randX, randY, car, index, speed);
-            else
-                enemies[index] = new Tank(this, randX, randY, car, index, speed);
-        } 
+    if (currentLevel == 1) {
+        if (random.nextInt(2) == 0)
+            enemies[index] = new Tank(this, randX, randY, car, index, speed);
+        else
+            enemies[index] = new Bandit(this, randX, randY, car, index, speed);
+    } 
+    else if (currentLevel == 2) {
+        if (random.nextInt(10) < 7)
+            enemies[index] = new Bandit(this, randX, randY, car, index, speed);
+        else
+            enemies[index] = new Tank(this, randX, randY, car, index, speed);
+    } 
+    else {
+        int type = random.nextInt(3);
+        if (type == 0)
+            enemies[index] = new Tank(this, randX, randY, car, index, speed + 1);
+        else if (type == 1)
+            enemies[index] = new Bandit(this, randX, randY, car, index, speed + 2);
         else {
-            int type = random.nextInt(3);
-            if (type == 0)
-                enemies[index] = new Tank(this, randX, randY, car, index, speed + 1);
-            else if (type == 1)
-                enemies[index] = new Bandit(this, randX, randY, car, index, speed + 2);
-            else {
-                // enemies[index] = new Blimp(this, randX, randY, car, index, speed);
-                enemies[index] = new Tank(this, randX, randY, car, index, speed + 3);
-            }
+            // enemies[index] = new Blimp(this, randX, randY, car, index, speed);
+            enemies[index] = new Tank(this, randX, randY, car, index, speed + 3);
         }
     }
+}
 }

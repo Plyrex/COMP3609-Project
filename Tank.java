@@ -17,7 +17,7 @@ public class Tank extends Enemy{
         y = yPos;
 
         enemy_num= enemy;
-        setLocation();
+        //setLocation();
 
         dx = speed;			// move side to side
         dy = height;			// would like to drop down after hitting wall

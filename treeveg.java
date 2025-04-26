@@ -34,6 +34,8 @@ public class treeveg { //i made this class so that it spawns trees and bushes ar
     private void spawnVegetation() {
         int mapWidth = tileMap.getWidth();
         int mapHeight = tileMap.getHeight();
+        if (mapWidth <= 0 || mapHeight <= 0) {
+            return; }
         for (int i = 0; i < NUM_TREES; i++) {
             int x, y;
             do {
