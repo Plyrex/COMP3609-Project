@@ -282,8 +282,8 @@ public class GamePanel extends JPanel implements Runnable {
     
         animation.start(screenCenterX, screenCenterY);
         
-        imageFX2 = new DisintegrateFX(this, screenCenterX, screenCenterY, height, width, "images/car.png");
-        car.goAway(200, 350);
+        // imageFX2 = new DisintegrateFX(this, screenCenterX, screenCenterY, height, width, "images/car.png");
+        // car.goAway(200, 350);
     }
 
     public void killEnemy(int x, int y, double height, double width, int type, int enemy, int method){
@@ -441,6 +441,9 @@ public class GamePanel extends JPanel implements Runnable {
         
         // Create car
         car = new Car(this, 200, 350);
+        // create animations
+        animation= new StripAnimation("images/kaboom.gif", 6, false);
+        animation2= new StripAnimation("images/select.png", 4, true);
         
         JFrame window = (JFrame)SwingUtilities.getWindowAncestor(this);
         if (window != null) {
