@@ -130,7 +130,7 @@ public class GamePanel extends JPanel implements Runnable {
             cutsceneManager.update();
             return;
         }
-
+        car.tick();
         if(!isPaused){
             if(car != null && tileMap != null) {
                 tileMap.centerOn(car.getX(), car.getY());
@@ -236,7 +236,6 @@ public class GamePanel extends JPanel implements Runnable {
             if(health!= null)
                 health.move();
         }
-        car.tick();
         //we use here for fuel tanfk shenangicans
         boolean allEnemiesDefeated = true;
         for (Enemy enemy : enemies) {
