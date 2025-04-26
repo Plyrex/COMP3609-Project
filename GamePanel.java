@@ -433,8 +433,8 @@ public class GamePanel extends JPanel implements Runnable {
     public void startGame() {				
         if (isRunning) return;
         
-        soundManager.setVolume("background", 0.7f);
-        soundManager.playClip("background", true);
+        //soundManager.setVolume("background", 0.7f);
+        //soundManager.playClip("background", true);
         isPaused = false;
         currentLevel = 1; // Reset to level 1
         
@@ -508,12 +508,20 @@ public class GamePanel extends JPanel implements Runnable {
         switch (level) { //unfortunately i did not continue the funny if else statmenets here bc switch is sm easier here
             case 1:
                 tilesetPath = "tilemap/level1.png";
+                soundManager.playClip("backgroundfull", false);
+                soundManager.setVolume("backgroundfull", 0.7f);
                 break;
             case 2:
                 tilesetPath = "tilemap/level2.png"; //idk something
+                soundManager.stopClip("backgroundfull");
+                soundManager.playClip("background2", false);
+                soundManager.setVolume("background2", 0.7f);
                 break;
             case 3:
                 tilesetPath = "tilemap/level3.png";
+                soundManager.stopClip("background2");
+                soundManager.playClip("background3", false);
+                soundManager.setVolume("background3", 0.7f);
                 break;
             default:
                 tilesetPath = "tilemap/basic_tileset_and_assets_standard/terrain_tiles_v2.png";

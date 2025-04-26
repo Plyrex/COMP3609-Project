@@ -2,6 +2,7 @@
 import javax.sound.sampled.*;
 import java.io.*;
 import java.util.HashMap;				// for storing sound clips
+import java.util.Objects;
 
 public class SoundManager {				// a Singleton class
 	HashMap<String, Clip> clips;
@@ -45,6 +46,15 @@ public class SoundManager {				// a Singleton class
 
 		clip = loadClip("sounds/wind.wav");
 		clips.put("wind", clip);
+
+		clip = loadClip("sounds/background2.wav");
+		clips.put("country2", clip);
+
+		clip = loadClip("sounds/background3.wav");
+		clips.put("country3", clip);
+
+		clip = loadClip("sounds/backgroundfull.wav");
+		clips.put("backgroundfull", clip);
 
 		volume = 1.0f;
 	}
@@ -101,14 +111,17 @@ public class SoundManager {				// a Singleton class
     	}
 
 		public void setVolume (String title, float volume) {
-		Clip clip = getClip(title);
+    Clip clip = getClip(title);
+    if (clip == null) return;
 
-		FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-	
-		float range = gainControl.getMaximum() - gainControl.getMinimum();
-		float gain = (range * volume) + gainControl.getMinimum();
-
-		gainControl.setValue(gain);
-		}	
+    if (clip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+        FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+        float range = gainControl.getMaximum() - gainControl.getMinimum();
+        float gain = (range * volume) + gainControl.getMinimum();
+        gainControl.setValue(gain);
+    } else {
+        System.out.println("Volume control not supported for: " + title);
+    }
+}
 
 }
