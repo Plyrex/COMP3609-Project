@@ -115,7 +115,7 @@ public class GameWindow extends JFrame
 		// mainPanel.add(infoPanel);
 		mainPanel.add(gamePanel);
 		mainPanel.add(buttonPanel);
-		mainPanel.setBackground(Color.PINK);
+		mainPanel.setBackground(Color.BLACK);
 
 		// set up mainPanel to respond to keyboard and mouse
 
