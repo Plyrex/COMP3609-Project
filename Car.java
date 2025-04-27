@@ -53,10 +53,10 @@ public class Car {
         this.y= y;
     }
     public void draw(Graphics2D g2, double cameraX, double cameraY) {
-      int drawX = (int)(this.x - cameraX);
-      int drawY = (int)(this.y - cameraY);
-      g2.drawImage(carImage, drawX, drawY, width, height, null);
-  }
+        int screenX = (int)(panel.getWidth() / 2 - width / 2);
+        int screenY = (int)(panel.getHeight() / 2 - height / 2);
+        g2.drawImage(carImage, screenX, screenY, width, height, null);
+    }
 
 
     public void erase () {
@@ -73,26 +73,9 @@ public class Car {
     }
 
     public void tick(){
-      x += velX;
-      y += velY;
-      TileMap tileMap = ((GamePanel)panel).getTileMap();
-      if (tileMap != null) {
-          int worldWidth = tileMap.getWidthPixels();
-          int worldHeight = tileMap.tilesToPixels(tileMap.getHeight());
-  
-          if (x < 0) {
-              x = 0;
-          } else if (x > worldWidth - width) {
-              x = worldWidth - width;
-          }
-  
-          if (y < 0) {
-              y = 0;
-          } else if (y > worldHeight - height) {
-              y = worldHeight - height;
-          }
-      }
-  }
+        x+= velX;
+        y+= velY;
+    }
 
    private void checkBounds(){
       if(x<=260) x= 260;
@@ -140,9 +123,17 @@ public class Car {
       return car.contains(x, y);
    }
 
-   public Rectangle2D.Double getBoundingRectangle() {
-      return new Rectangle2D.Double(x, y, width, height);
-  }
+   public Rectangle2D.Double getBoundingRectangle() { //this took ne so skibidi long to figuyre out ffasbhfahfbhajs
+
+    int screenX = panel.getWidth() / 2 - width / 2;
+    int screenY = panel.getHeight() / 2 - height / 2;
+
+    TileMap tileMap = ((GamePanel)panel).getTileMap();
+    double cameraX = tileMap != null ? tileMap.getCameraX() : 0;
+    double cameraY = tileMap != null ? tileMap.getCameraY() : 0;
+    
+    return new Rectangle2D.Double(cameraX + screenX, cameraY + screenY, width, height);
+}
 
    public int getHeight(){
       return height;
