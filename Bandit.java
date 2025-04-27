@@ -48,6 +48,8 @@ public class Bandit extends Enemy{
         int width= panel.getWidth();
         boolean CarCollision = collideWithPlayer();
         boolean BulletCollision= collideWithBullet();
+
+        checkBounds();
   
         if (!panel.isVisible ()) return;
   

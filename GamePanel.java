@@ -40,7 +40,7 @@ public class GamePanel extends JPanel implements Runnable {
     private CutsceneManager cutsceneManager;
     Random random= new Random();
     int rand, type, move;
-    private int NUM_ENEMIES= 2;
+    private int NUM_ENEMIES= 5;
     private int kills= 0, powerupKills= 0;
     private StripAnimation animation, animation2;
     private int speed= 2;

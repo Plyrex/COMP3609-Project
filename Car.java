@@ -77,12 +77,12 @@ public class Car {
         y+= velY;
     }
 
-    private void checkBounds(){
-        if(x<=260) x= 260;
-        if(x>= 1660) x= 1660;
-        if(y<=260) y= 260;
-        if(y>= 1340) y= 1340;
-    }
+   private void checkBounds(){
+      if(x<=260) x= 260;
+      if(x>= 1660) x= 1660;
+      if(y<=260) y= 260;
+      if(y>= 1340) y= 1340;
+   }
 
 	public void move(int direction) {
     if (!panel.isVisible()) return;
