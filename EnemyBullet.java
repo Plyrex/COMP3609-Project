@@ -36,7 +36,7 @@ public class EnemyBullet {
             this.dy = speed;
         }
         
-        bulletImage= ImageManager.loadImage("images/bulletUp.png");
+        bulletImage= ImageManager.loadImage("images/enemyBullet.png");
         // bulletWidth = size;
         // bulletHeight = size;
         
