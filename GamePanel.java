@@ -109,8 +109,7 @@ public class GamePanel extends JPanel implements Runnable {
             while (isRunning) {
                 if(!isPaused) {
                     gameUpdate();
-                }
-                    
+                }  
                 gameRender();
                 if (!cutsceneManager.isPlaying() && car != null) {
                     car.tick();
@@ -150,21 +149,22 @@ public class GamePanel extends JPanel implements Runnable {
                             soundManager.playClip("hit", false);
                             bullets.remove(i);
                             addPoints(1);
-                            rand= random.nextInt(3);
-                            if(rand==0 || rand== 1){
-                                drop= new DogTag(this, car, enemies[j].getX(), enemies[j].getY());
-                            }else{
-                                drop= new HealthPickup(this, car, enemies[j].getX(), enemies[j].getY());
+                            rand = random.nextInt(3);
+                            if (rand == 0 || rand == 1) {
+                                drop = new DogTag(this, car, enemies[j].getX(), enemies[j].getY());
+                            } else {
+                                drop = new HealthPickup(this, car, enemies[j].getX(), enemies[j].getY());
                             }
-
-                            StripAnimation dropAnim= new StripAnimation("images/select.png", 4, true);
-                            dropAnim.start(drop.getX()-20, drop.getY()-10);
+                            StripAnimation dropAnim = new StripAnimation("images/select.png", 4, true);
+                            dropAnim.start(drop.getX() - 20, drop.getY() - 10);
                             drops.add(drop);
                             animations.add(dropAnim);
-                            killEnemy(enemies[j].getX(), enemies[j].getY(), 
-                                    enemies[j].getBoundingRectangle().height, 
-                                    enemies[j].getBoundingRectangle().width, 
+                            if (enemies[j].takeDamage()) {
+                                killEnemy(enemies[j].getX(), enemies[j].getY(),
+                                    enemies[j].getBoundingRectangle().height,
+                                    enemies[j].getBoundingRectangle().width,
                                     enemies[j].getType(), j, 0);
+                            }
                             hitSomething = true;
                             break;
                         }
@@ -546,7 +546,15 @@ public class GamePanel extends JPanel implements Runnable {
 
             if (level == 1 && cutsceneManager != null) {
                 cutsceneManager.setTileMap(tileMap);
-                // cutsceneManager.startCutscene("takeoff");
+                cutsceneManager.startCutscene("takeoff");
+            }
+            if (level == 2 && cutsceneManager != null) {
+                cutsceneManager.setTileMap(tileMap);
+                cutsceneManager.startCutscene("takeoff");
+            }
+            if (level == 3 && cutsceneManager != null) {
+                cutsceneManager.setTileMap(tileMap);
+                cutsceneManager.startCutscene("takeoff");
             }
 
         } catch (IOException e) {
@@ -623,14 +631,14 @@ public class GamePanel extends JPanel implements Runnable {
         int healthval = getLifeTotal();
         Font healthFont = new Font("Arial", Font.BOLD, 16);
         imageContext.setFont(healthFont);
-        imageContext.setColor(Color.BLACK);
+        imageContext.setColor(Color.RED);
         imageContext.drawString("HEALTH: " + healthval, 10, 40);
     }
 
     public void renderlevel(Graphics2D imageContext){
         Font levelFont = new Font("Arial", Font.BOLD, 16);
         imageContext.setFont(levelFont);
-        imageContext.setColor(Color.WHITE);
+        imageContext.setColor(Color.BLACK);
         imageContext.drawString("LEVEL: " + currentLevel, 10, 20);
     }
 
@@ -638,7 +646,7 @@ public class GamePanel extends JPanel implements Runnable {
         Font levelFont = new Font("Arial", Font.BOLD, 16);
         imageContext.setFont(levelFont);
         imageContext.setColor(Color.WHITE);
-        imageContext.drawString("Dog Tags: " + collectedTags+ " / 5", 10, 390);
+        imageContext.drawString("Dog Tags: " + collectedTags+ " / 5",290, 40);
     }
 
     public void renderScore(Graphics2D imageContext){
@@ -646,7 +654,7 @@ public class GamePanel extends JPanel implements Runnable {
         Font levelFont = new Font("Arial", Font.BOLD, 16);
         imageContext.setFont(levelFont);
         imageContext.setColor(Color.WHITE);
-        imageContext.drawString("Score: " + score, 310, 20);
+        imageContext.drawString("Score: " + score, 290, 20);
     }
 
 }

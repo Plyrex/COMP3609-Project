@@ -126,4 +126,9 @@ public class Blimp extends Enemy{
         //    panel.killEnemy(x, y, this.height, this.width, 0, enemy_num, 0);
         // }
     }
+    @Override
+public boolean takeDamage() {
+    lives--;
+    return lives <= 0;
+}
 }

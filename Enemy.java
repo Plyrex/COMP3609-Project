@@ -111,4 +111,8 @@ public abstract class Enemy implements EntityInterface{
     public int getType(){
         return this.type;
     }
+
+    public boolean takeDamage() {
+        return true;
+    }
 }
