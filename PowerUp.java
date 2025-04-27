@@ -3,106 +3,84 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Random;
 import java.awt.Image;
 
-public abstract class PowerUp implements PowerUpInterface{
-    private GamePanel panel;
+public abstract class PowerUp{
 
-    private int x;
-    private int y;
+   protected GamePanel panel;
 
-    private int width;
-    private int height;
+   protected int x;
+   protected int y;
 
-    Ellipse2D.Double head;	// ellipse drawn for face
+   protected int width;
+   protected int height;
 
-    private int dx;		// increment to move along x-axis
-    private int dy;		// increment to move along y-axis
+   protected Ellipse2D.Double head;	// ellipse drawn for face
 
-    private Color backgroundColour;
-    // private Dimension dimension;
+   protected Color backgroundColour;
 
-    private Random random= new Random();
+   protected Car bat;
+   protected SoundManager soundManager;
+   protected Image alienImage;
 
-    private Car bat;
-    private Bullet bullet;
-    private EnemyBullet oppBullet;
-    private SoundManager soundManager;
-    private Image alienImage;
-    private ImageFX imageFX1;
-    private int enemy_num; //keeps track of which enemy this is
-    private int rand;
-    private boolean side;
-    private long lastShotTime, shotDelay;
+   public void draw (Graphics2D imageContext) {
+      Graphics g = panel.getGraphics ();
+      Graphics2D g2 = (Graphics2D) g;
 
-    public void setLocation() {
-        int panelWidth = panel.getWidth();
-        int panelHeight = panel.getHeight();
-        x = random.nextInt (panelWidth/2, panelWidth);
-        y = 10;
-        dx+= 2;
-    }
+      imageContext.drawImage(alienImage, x, y, width, height, null);
 
-    public void draw (Graphics2D imageContext) {
-        Graphics g = panel.getGraphics ();
-        Graphics2D g2 = (Graphics2D) g;
+      g.dispose();
+   }
 
-        imageContext.drawImage(alienImage, x, y, width, height, null);
-        g.dispose();
-    }
+   public void erase() {
+      Graphics g = panel.getGraphics();
+      Graphics2D g2 = (Graphics2D) g;
 
-    public void erase() {
-        Graphics g = panel.getGraphics();
-        Graphics2D g2 = (Graphics2D) g;
+      g2.setColor (backgroundColour);
+      g2.fill (new Ellipse2D.Double (x, y, width, height));
 
-        g2.setColor (backgroundColour);
-        g2.fill (new Ellipse2D.Double (x, y, width, height));
+      g2.setColor(backgroundColour);	 
+      g2.draw(new Ellipse2D.Double (x, y, width, height));
 
-        g2.setColor(backgroundColour);	 
-        g2.draw(new Ellipse2D.Double (x, y, width, height));
+      g.dispose();
+  }
 
-        g.dispose();
-    }
+   public void move() {
+      boolean CarCollision = collidesWithCar();
 
+      if (!panel.isVisible ()) return;
+          
+      if (CarCollision) {
+         soundManager.playClip("pickup", false);
+         if(panel.getLifeTotal()>= 5){
+            panel.addPoints(5);
+         }else{
+            panel.addLife(2);
+         }
 
-    public void move() {
-        int height = panel.getHeight();
-        int width= panel.getWidth();
-        boolean CarCollision = collideWithPlayer();
+         panel.removeHealth();
+      }
 
-        if (!panel.isVisible ()) return;
-            
-        if (CarCollision) {
-            soundManager.playClip("pickup", false);
-            if(panel.getLifeTotal()>= 5){
-                panel.addPoints(5);
-            }else{
-                panel.addLife(2);
-            }
+   }
 
-            panel.removeHealth();
-        }
-    }
+   public Rectangle2D.Double getBoundingRectangle() {
+      return new Rectangle2D.Double (x, y, width, height);
+   }
 
-    public Rectangle2D.Double getBoundingRectangle() {
-        return new Rectangle2D.Double (x, y, width, height);
-    }
+   
+   public boolean collidesWithCar() {
+      Rectangle2D.Double myRect = getBoundingRectangle();
+      Rectangle2D.Double batRect = bat.getBoundingRectangle();
+      
+      return myRect.intersects(batRect); 
+   }
 
+   public int getX(){
+      return this.x;
+   }
 
-    public boolean collideWithPlayer() {
-        Rectangle2D.Double myRect = getBoundingRectangle();
-        Rectangle2D.Double batRect = bat.getBoundingRectangle();
+   public int getY(){
+      return this.y;
+   }
 
-        return myRect.intersects(batRect); 
-    }
-
-
-    public int getX(){
-        return this.x;
-    }
-
-    public int getY(){
-        return this.y;
-    }
 }
