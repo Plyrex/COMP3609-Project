@@ -150,7 +150,7 @@ public class GamePanel extends JPanel implements Runnable {
                             addPoints(1);
                             health= new HealthPickup(this, car, enemies[j].getX(), enemies[j].getY());
                             animation2.start(health.getX()-20, health.getY()-10);
-                            // System.out.println("Health Created at"+ );
+                            System.out.println("Health Created at "+ enemies[j].getX()+ " "+ enemies[j].getY());
                             killEnemy(enemies[j].getX(), enemies[j].getY(), 
                                     enemies[j].getBoundingRectangle().height, 
                                     enemies[j].getBoundingRectangle().width, 
@@ -527,7 +527,7 @@ public class GamePanel extends JPanel implements Runnable {
                         //@saeed you can use here to fix the enemy spawning and add what you need to
             case 1:
                 for (int i = 0; i < NUM_ENEMIES; i++) {
-                    spawnEnemyInWorldBounds(i, 5, 5, 10, 10, speed);
+                    spawnEnemyInWorldBounds(i, speed);
                 }
                 break;
                 
@@ -536,9 +536,9 @@ public class GamePanel extends JPanel implements Runnable {
                 for (int i = 0; i < NUM_ENEMIES; i++) {
                     int enemyType = random.nextInt(10);
                     if (enemyType < 7) { // 70% chance for Bandit
-                        spawnEnemyInWorldBounds(i, 3, 3, 15, 15, speed);
+                        spawnEnemyInWorldBounds(i, speed);
                     } else { // 30% chance for Tank
-                        spawnEnemyInWorldBounds(i, 3, 3, 15, 15, speed);
+                        spawnEnemyInWorldBounds(i, speed);
                     }
                 }
                 //replace kamikaze with whgatever we decide
@@ -551,12 +551,12 @@ public class GamePanel extends JPanel implements Runnable {
                 for (int i = 0; i < NUM_ENEMIES; i++) {
                     int enemyType = random.nextInt(10);
                     if (enemyType < 3) { // 30% chance for Tank
-                        spawnEnemyInWorldBounds(i, 2, 2, 18, 18, speed);
+                        spawnEnemyInWorldBounds(i, speed);
                     } else if (enemyType < 8) { // 50% chance for Bandit
-                        spawnEnemyInWorldBounds(i, 2, 2, 18, 18, speed);
+                        spawnEnemyInWorldBounds(i, speed);
                     } else { 
                         // enemies[i] = new Blimp(this, randX, randY, car, i, speed + 2);
-                        spawnEnemyInWorldBounds(i, 2, 2, 18, 18, speed);
+                        spawnEnemyInWorldBounds(i, speed);
                     }
                 }
                 // replace with wahthever
@@ -565,17 +565,21 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    private void spawnEnemyInWorldBounds(int index, int minTileX, int minTileY, int maxTileX, int maxTileY, int speed) {
-    int mapWidthTiles = tileMap.getWidth();//my god i want to put down my computer I SFDNJAIFNIUAJBNSU
-    int mapHeightTiles = tileMap.getHeight();//the code was basically what i was doing in making things work with the world bounds and just having it all here but omgdfnsjk
+    private void spawnEnemyInWorldBounds(int index, int speed) {
+    // int mapWidthTiles = tileMap.getWidth();//my god i want to put down my computer I SFDNJAIFNIUAJBNSU
+    // int mapHeightTiles = tileMap.getHeight();//the code was basically what i was doing in making things work with the world bounds and just having it all here but omgdfnsjk
 
-    int minX = 0;
-    int minY = 0;
-    int maxX = TileMap.tilesToPixels(mapWidthTiles) - 1;
-    int maxY = TileMap.tilesToPixels(mapHeightTiles) - 1;
+    //POV I found the fix
+    int useableX= 1920;
+    int useableY= 1600;
 
-    int randX = random.nextInt(maxX - minX) + minX;
-    int randY = random.nextInt(maxY - minY) + minY;
+    int minX = 260;
+    int minY = 260;
+    // int maxX = TileMap.tilesToPixels(mapWidthTiles) - 1;
+    // int maxY = TileMap.tilesToPixels(mapHeightTiles) - 1;
+
+    int randX = random.nextInt(minX, useableX);
+    int randY = random.nextInt(minY, useableY);
 
     if (currentLevel == 1) {
         if (random.nextInt(2) == 0)

@@ -51,6 +51,7 @@ public class HealthPickup extends PowerUp{
           
       if (CarCollision) {
          soundManager.playClip("pickup", false);
+         System.out.println("Health Picked Up");
          if(panel.getLifeTotal()>= 5){
             panel.addPoints(5);
          }else{
