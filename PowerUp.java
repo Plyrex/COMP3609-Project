@@ -55,7 +55,6 @@ public abstract class PowerUp{
             panel.addLife(2);
          }
 
-         panel.removeHealth();
       }
 
    }

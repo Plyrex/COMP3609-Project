@@ -58,7 +58,6 @@ public class HealthPickup extends PowerUp{
             panel.addLife(2);
          }
 
-         panel.removeHealth();
       }
 
    }

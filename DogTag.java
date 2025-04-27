@@ -21,14 +21,10 @@ public class DogTag extends PowerUp{
         if (!panel.isVisible ()) return;
             
         if (CarCollision) {
-           soundManager.playClip("pickup", false);
-           if(panel.getLifeTotal()>= 5){
-              panel.addPoints(5);
-           }else{
-              panel.addLife(2);
-           }
+            soundManager.playClip("pickup", false);
+            panel.addDogTag();
+            // System.out.println("YIPPIE!");
   
-           panel.removeHealth();
         }
   
     }
