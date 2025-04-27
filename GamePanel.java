@@ -417,7 +417,7 @@ public class GamePanel extends JPanel implements Runnable {
         currentLevel = 1; // Reset to level 1
         
         // Create car
-        car = new Car(this, 200, 350);
+        car = new Car(this, 700, 540);
         // create animations
         animation= new StripAnimation("images/kaboom.gif", 6, false);
         animation2= new StripAnimation("images/select.png", 4, true);
