@@ -85,15 +85,15 @@ public class GamePanel extends JPanel implements Runnable {
         );
     }
 
-    public void createGameEntities() {
-        car = new Car (this, 200, 350);
-        animation= new StripAnimation("images/kaboom.gif", 6, false);
-        animation2= new StripAnimation("images/select.png", 4, true);
-        // rotate= new RotateFX(this, "images/health.png");
+    // public void createGameEntities() {
+    //     car = new Car (this, 200, 350);
+    //     animation= new StripAnimation("images/kaboom.gif", 6, false);
+    //     animation2= new StripAnimation("images/select.png", 4, true);
+    //     // rotate= new RotateFX(this, "images/health.png");
 
-        bullets.clear();
-          enemyBullets.clear();
-    }
+    //     bullets.clear();
+    //       enemyBullets.clear();
+    // }
 
 
     public void checkOpponents(){
@@ -126,7 +126,7 @@ public class GamePanel extends JPanel implements Runnable {
             cutsceneManager.update();
             return;
         }
-        car.tick();
+        // car.tick();
         if(!isPaused){
             if(car != null && tileMap != null) {
                 tileMap.centerOn(car.getX(), car.getY());

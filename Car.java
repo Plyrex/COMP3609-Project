@@ -71,6 +71,7 @@ public class Car {
 
         g.dispose();
     }
+
     public void tick(){
         x+= velX;
         y+= velY;
@@ -87,40 +88,40 @@ public class Car {
         carImage = carLeftImage;
         setDirection(2);
         setVelX(-5);
-        setVelY(0);
+        // setVelY(0);
         if (x <= 0) {
             x = 0;
-            setVelX(0);
+            // setVelX(0);
         }
     }
     else if (direction == 2) { // Right
         carImage = carRightImage;
         setDirection(3);
         setVelX(5);
-        setVelY(0);
+        // setVelY(0);
         if (x >= worldWidth - width) {
             x = worldWidth - width;
-            setVelX(0);
+            // setVelX(0);
         }
     }
     else if(direction == 3) { // Up
         carImage = carUpImage;
         setDirection(0);
         setVelY(-5);
-        setVelX(0);
+        // setVelX(0);
         if (y <= 0) {
             y = 0;
-            setVelY(0);
+            // setVelY(0);
         }
     }
     else if(direction == 4) { // Down
         carImage = carDownImage;
         setDirection(1);
         setVelY(5);
-        setVelX(0);
+        // setVelX(0);
         if (y >= worldHeight - height) {
             y = worldHeight - height;
-            setVelY(0);
+            // setVelY(0);
         }
     }
 }
