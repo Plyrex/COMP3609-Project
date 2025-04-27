@@ -1,5 +1,5 @@
 public class DogTag extends PowerUp{
-    public DogTag(GamePanel p, Car bat) {
+    public DogTag(GamePanel p, Car bat, int x, int y) {
         panel = p;
         backgroundColour = panel.getBackground ();
   

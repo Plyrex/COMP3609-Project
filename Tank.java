@@ -39,13 +39,13 @@ public class Tank extends Enemy{
 
     }
 
-    public void setLocation(){
-        int panelWidth = panel.getWidth();
-        int panelHeight= panel.getHeight();
-        x = random.nextInt (panelWidth - width);
-        y = random.nextInt(panelHeight- height);
-        dx+= 2;
-    }
+    // public void setLocation(){
+    //     int panelWidth = panel.getWidth();
+    //     int panelHeight= panel.getHeight();
+    //     x = random.nextInt (panelWidth - width);
+    //     y = random.nextInt(panelHeight- height);
+    //     dx+= 2;
+    // }
     
 
     // public void move() {

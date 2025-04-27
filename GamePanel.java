@@ -46,7 +46,7 @@ public class GamePanel extends JPanel implements Runnable {
     private StripAnimation animation, animation2;
     private int speed= 2;
     private int time, timeChange= 1;
-    private HealthPickup health;
+    private PowerUp health;
     private int currentLevel = 1;
     private static final int MAX_LEVEL = 3;
     private treeveg Vageeta;
@@ -113,6 +113,7 @@ public class GamePanel extends JPanel implements Runnable {
                 gameRender();
                 if (!cutsceneManager.isPlaying() && car != null) {
                     car.tick();
+                    System.out.println(car.getX()+" "+car.getY());
                 }
                 
                 Thread.sleep(33); 
@@ -149,7 +150,7 @@ public class GamePanel extends JPanel implements Runnable {
                             soundManager.playClip("hit", false);
                             bullets.remove(i);
                             addPoints(1);
-                            health= new HealthPickup(this, car, enemies[j].getX(), enemies[j].getY());
+                            health= new DogTag(this, car, enemies[j].getX(), enemies[j].getY());
                             animation2.start(health.getX()-20, health.getY()-10);
                             System.out.println("Health Created at "+ enemies[j].getX()+ " "+ enemies[j].getY());
                             killEnemy(enemies[j].getX(), enemies[j].getY(), 
@@ -570,8 +571,9 @@ public class GamePanel extends JPanel implements Runnable {
     // int mapHeightTiles = tileMap.getHeight();//the code was basically what i was doing in making things work with the world bounds and just having it all here but omgdfnsjk
 
     //POV I found the fix
-    int useableX= 1920;
-    int useableY= 1600;
+    //minusing 150 for a buffer so that the enemies dont float off (Also for Blimp not spawning off the map)
+    int useableX= 1660 - 150;
+    int useableY= 1340 - 150;
 
     int minX = 260;
     int minY = 260;

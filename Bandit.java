@@ -35,13 +35,13 @@ public class Bandit extends Enemy{
         rand= random.nextInt(4);
     }
 
-    public void setLocation(){
-        int panelWidth = panel.getWidth();
-        int panelHeight= panel.getHeight();
-        x = random.nextInt (panelWidth - width);
-        y = random.nextInt(panelHeight- height);
-        dx+= 2;
-    };
+    // public void setLocation(){
+    //     int panelWidth = panel.getWidth();
+    //     int panelHeight= panel.getHeight();
+    //     x = random.nextInt (panelWidth - width);
+    //     y = random.nextInt(panelHeight- height);
+    //     dx+= 2;
+    // };
 
     public void move() {
         int height = panel.getHeight();
