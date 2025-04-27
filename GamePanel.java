@@ -15,6 +15,8 @@ import java.io.IOException;
 import javax.swing.SwingUtilities;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import java.awt.AlphaComposite;
+import java.awt.FontMetrics;
 
 /**
    A component that displays all the game entities
@@ -53,6 +55,13 @@ public class GamePanel extends JPanel implements Runnable {
     private static final int MAX_LEVEL = 3;
     private treeveg Vageeta;
     private int collectedTags= 0;
+
+    private boolean fadeActive = false;
+    private float fadeAlpha = 0.0f;
+    private String gameOverMessage = "";
+    private boolean gameOver = false;
+    private boolean victory = false;
+    private static final float FADE_SPEED = 0.05f;
 
     public GamePanel() {
         // setPreferredSize(new Dimension(VIEW_WIDTH, VIEW_HEIGHT));
@@ -122,11 +131,20 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void gameUpdate() {
+        if (fadeActive) {
+            fadeAlpha += FADE_SPEED;
+            if (fadeAlpha >= 1.0f) {
+                fadeAlpha = 1.0f;
+                if ((gameOver && !victory) || victory) {
+                    isRunning = false;
+                    return; 
+                }
+            }
+        }
         if (cutsceneManager.isPlaying()) {
             cutsceneManager.update();
             return;
         }
-        // car.tick();
         if(!isPaused){
             if(car != null && tileMap != null) {
                 tileMap.centerOn(car.getX(), car.getY());
@@ -187,7 +205,7 @@ public class GamePanel extends JPanel implements Runnable {
                     if (getLifeTotal() <= 0) {
                         soundManager.playClip("death", false);
                         destroyed(car.getX(), car.getY(), car.getHeight(), car.getWidth());
-                        endGame();
+                        startDeathSequence();
                     }
                 }
             }
@@ -246,9 +264,12 @@ public class GamePanel extends JPanel implements Runnable {
                 break;
             }
         }
+        if (allEnemiesDefeated && currentLevel == 3 && !fadeActive) {
+            startVictorySequence();
+        }
 
-        if (collectedTags>= 5) {
-            collectedTags= 0;
+        if (collectedTags >= 5) {
+            collectedTags = 0;
             advanceToNextLevel();
         }
     }
@@ -431,7 +452,10 @@ public class GamePanel extends JPanel implements Runnable {
                 renderDogTagCollected(imageContext);
                 renderScore(imageContext);
             }
-            
+            if (fadeActive) {
+                RenderFade(imageContext);
+            }
+
             g2 = (Graphics2D) getGraphics();
             if (g2 != null) {
                 g2.drawImage(image, 0, 0, getWidth(), getHeight(), null);
@@ -479,7 +503,10 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    public void endGame() {					
+    public void endGame() {		
+        soundManager.stopClip("backgroundfull");
+        soundManager.stopClip("country2");
+        soundManager.stopClip("country3");			
         isRunning = false;
         speed = 5;
     }
@@ -627,7 +654,7 @@ public class GamePanel extends JPanel implements Runnable {
         enemies[index] = new Blimp(this, randX, randY, car, index, speed);
     }
 }
-    public void renderhealth(Graphics2D imageContext){
+    private void renderhealth(Graphics2D imageContext){
         int healthval = getLifeTotal();
         Font healthFont = new Font("Arial", Font.BOLD, 16);
         imageContext.setFont(healthFont);
@@ -635,21 +662,21 @@ public class GamePanel extends JPanel implements Runnable {
         imageContext.drawString("HEALTH: " + healthval, 10, 40);
     }
 
-    public void renderlevel(Graphics2D imageContext){
+    private void renderlevel(Graphics2D imageContext){
         Font levelFont = new Font("Arial", Font.BOLD, 16);
         imageContext.setFont(levelFont);
         imageContext.setColor(Color.BLACK);
         imageContext.drawString("LEVEL: " + currentLevel, 10, 20);
     }
 
-    public void renderDogTagCollected(Graphics2D imageContext){
+    private void renderDogTagCollected(Graphics2D imageContext){
         Font levelFont = new Font("Arial", Font.BOLD, 16);
         imageContext.setFont(levelFont);
         imageContext.setColor(Color.WHITE);
         imageContext.drawString("Dog Tags: " + collectedTags+ " / 5",290, 40);
     }
 
-    public void renderScore(Graphics2D imageContext){
+    private void renderScore(Graphics2D imageContext){
         int score= getScoreTotal();
         Font levelFont = new Font("Arial", Font.BOLD, 16);
         imageContext.setFont(levelFont);
@@ -657,4 +684,36 @@ public class GamePanel extends JPanel implements Runnable {
         imageContext.drawString("Score: " + score, 290, 20);
     }
 
+    private void startDeathSequence() {
+        fadeActive = true;
+        gameOver = true;
+        gameOverMessage = "YOU DIED";
+        fadeAlpha = 0.0f;
+    }
+    
+    private void startVictorySequence() {
+        fadeActive = true;
+        victory = true;
+        gameOverMessage = "VICTORY!";
+        fadeAlpha = 0.0f;
+    }
+
+    private void RenderFade (Graphics2D imageContext) {
+        imageContext.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fadeAlpha));
+        imageContext.setColor(Color.BLACK);
+        imageContext.fillRect(0, 0, getWidth(), getHeight());
+        
+        if (fadeAlpha > 0.5f) {
+            Font pixelFont = new Font("Courier New", Font.BOLD, 48);
+            imageContext.setFont(pixelFont);
+            imageContext.setColor(Color.RED);
+            FontMetrics fm = imageContext.getFontMetrics(); // all of this fancy code to centre the text bc we have two messages that could play through this and i dont want to move this to two functions
+            int textWidth = fm.stringWidth(gameOverMessage); //bc this works now
+            int textX = (getWidth() - textWidth) / 2; // i forgor the width and height of the draw window again so please replace the width and height later
+            int textY = getHeight() / 2;
+            imageContext.drawString(gameOverMessage, textX, textY);
+        }
+        
+        imageContext.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+    }
 }
