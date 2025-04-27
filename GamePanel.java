@@ -46,7 +46,6 @@ public class GamePanel extends JPanel implements Runnable {
     private int speed= 2;
     private int time, timeChange= 1;
     private HealthPickup health;
-    private RotateFX rotate;
     private int currentLevel = 1;
     private static final int MAX_LEVEL = 3;
     private treeveg Vageeta;
@@ -209,9 +208,6 @@ public class GamePanel extends JPanel implements Runnable {
             
             if(imageFX2!= null)
                 imageFX2.update();
-
-            if(rotate!= null)
-                rotate.update();
             
             if(animation!= null)
                 animation.update();
@@ -234,10 +230,6 @@ public class GamePanel extends JPanel implements Runnable {
         if (allEnemiesDefeated) {
             advanceToNextLevel();
         }
-    }
-
-    public void updateRotate(int num){
-        rotate.setRotation(num);
     }
 
     public void updateBat(int direction) {
@@ -394,7 +386,6 @@ public class GamePanel extends JPanel implements Runnable {
 
                 if(imageFX1 != null) imageFX1.draw(imageContext); //I SAW THIS SICK AAH WAY TO WRITE THIS INSTEAD OF HOW LONG IT USUALLY IS
                 if(imageFX2 != null) imageFX2.draw(imageContext);
-                if(rotate != null) rotate.draw(imageContext);
                 if(animation != null) animation.draw(imageContext);
                 if(animation2 != null) animation2.draw(imageContext);
                 if(health != null) health.draw(imageContext);
