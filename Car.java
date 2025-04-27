@@ -98,41 +98,21 @@ public class Car {
         carImage = carLeftImage;
         setDirection(2);
         setVelX(-5);
-        // setVelY(0);
-        if (x <= 260) {
-            x = 260;
-            // setVelX(0);
-        }
     }
     else if (direction == 2) { // Right
         carImage = carRightImage;
         setDirection(3);
         setVelX(5);
-        // setVelY(0);
-        if (x >= worldWidth - width) {
-            x = worldWidth - width;
-            // setVelX(0);
-        }
     }
     else if(direction == 3) { // Up
         carImage = carUpImage;
         setDirection(0);
         setVelY(-5);
-        // setVelX(0);
-        if (y <= 260) {
-            y = 260;
-            // setVelY(0);
-        }
     }
     else if(direction == 4) { // Down
         carImage = carDownImage;
         setDirection(1);
         setVelY(5);
-        // setVelX(0);
-        if (y >= worldHeight - height) {
-            y = worldHeight - height;
-            // setVelY(0);
-        }
     }
 }
 

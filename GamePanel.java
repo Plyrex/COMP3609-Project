@@ -150,6 +150,7 @@ public class GamePanel extends JPanel implements Runnable {
                             addPoints(1);
                             health= new HealthPickup(this, car, enemies[j].getX(), enemies[j].getY());
                             animation2.start(health.getX()-20, health.getY()-10);
+                            // System.out.println("Health Created at"+ );
                             killEnemy(enemies[j].getX(), enemies[j].getY(), 
                                     enemies[j].getBoundingRectangle().height, 
                                     enemies[j].getBoundingRectangle().width, 
