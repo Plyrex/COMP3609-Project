@@ -84,16 +84,6 @@ public class GamePanel extends JPanel implements Runnable {
         );
     }
 
-    // public void createGameEntities() {
-    //     car = new Car (this, 200, 350);
-    //     animation= new StripAnimation("images/kaboom.gif", 6, false);
-    //     animation2= new StripAnimation("images/select.png", 4, true);
-    //     // rotate= new RotateFX(this, "images/health.png");
-
-    //     bullets.clear();
-    //       enemyBullets.clear();
-    // }
-
 
     public void checkOpponents(){
         if(enemies== null){
@@ -106,15 +96,15 @@ public class GamePanel extends JPanel implements Runnable {
             isRunning = true;
             while (isRunning) {
                 if(!isPaused) {
+                    if (!cutsceneManager.isPlaying() && car != null) {
+                        car.tick();
+                    }
                     gameUpdate();
                 }
-                    
+
                 gameRender();
-                if (!cutsceneManager.isPlaying() && car != null) {
-                    car.tick();
-                }
-                
-                Thread.sleep(33); 
+
+                Thread.sleep(33);
             }
         }
         catch(InterruptedException e) {}
@@ -125,10 +115,11 @@ public class GamePanel extends JPanel implements Runnable {
             cutsceneManager.update();
             return;
         }
-        // car.tick();
         if(!isPaused){
             if(car != null && tileMap != null) {
-                tileMap.centerOn(car.getX(), car.getY());
+                double targetCameraX = car.getX() - getWidth() / 2.0 + car.getWidth() / 2.0;
+                double targetCameraY = car.getY() - getHeight() / 2.0 + car.getHeight() / 2.0;
+                tileMap.setCameraPosition(targetCameraX, targetCameraY);
             }
 
             // WACK AHH bullet implememntation but we work
@@ -141,7 +132,7 @@ public class GamePanel extends JPanel implements Runnable {
                 }
                 Rectangle2D.Double bulletRect = b.getBoundingRectangle();
                 boolean hitSomething = false;
-    
+
                 if (enemies != null) {
                     for (int j = 0; j < NUM_ENEMIES; j++) {
                         if (enemies[j] != null && bulletRect.intersects(enemies[j].getBoundingRectangle())) {
@@ -150,10 +141,9 @@ public class GamePanel extends JPanel implements Runnable {
                             addPoints(1);
                             health= new HealthPickup(this, car, enemies[j].getX(), enemies[j].getY());
                             animation2.start(health.getX()-20, health.getY()-10);
-                            System.out.println("Health Created at "+ enemies[j].getX()+ " "+ enemies[j].getY());
-                            killEnemy(enemies[j].getX(), enemies[j].getY(), 
-                                    enemies[j].getBoundingRectangle().height, 
-                                    enemies[j].getBoundingRectangle().width, 
+                            killEnemy(enemies[j].getX(), enemies[j].getY(),
+                                    enemies[j].getBoundingRectangle().height,
+                                    enemies[j].getBoundingRectangle().width,
                                     0, j, 0);
                             hitSomething = true;
                             break;
@@ -189,9 +179,9 @@ public class GamePanel extends JPanel implements Runnable {
                 }
                 if (enemies[i] != null){
                     enemies[i].move();
-                    
-                if (random.nextInt(100) < 0.5) { 
-                        enemyShoot(i, enemies[i].getX(), enemies[i].getY(), 
+
+                if (random.nextInt(100) < 0.5) {
+                        enemyShoot(i, enemies[i].getX(), enemies[i].getY(),
                                 (int)enemies[i].getBoundingRectangle().width);
                 }
                 }
@@ -203,29 +193,33 @@ public class GamePanel extends JPanel implements Runnable {
             while (enemyBullets.size() > 50) {
                 enemyBullets.remove(0);
             }
-            
+
             if(imageFX1!= null)
                 imageFX1.update();
-            
+
             if(imageFX2!= null)
                 imageFX2.update();
-            
+                
             if(animation!= null)
                 animation.update();
 
             if(animation2!= null)
                 animation2.update();
-            
+
             if(health!= null)
                 health.move();
         }
         //we use here for fuel tanfk shenangicans
         boolean allEnemiesDefeated = true;
-        for (Enemy enemy : enemies) {
-            if (enemy != null) {
-                allEnemiesDefeated = false;
-                break;
+        if (enemies != null) { 
+            for (Enemy enemy : enemies) {
+                if (enemy != null) {
+                    allEnemiesDefeated = false;
+                    break;
+                }
             }
+        } else {
+            allEnemiesDefeated = false;
         }
 
         if (allEnemiesDefeated) {
@@ -291,18 +285,12 @@ public class GamePanel extends JPanel implements Runnable {
         spawns[enemy]= null;
     }
 
-    public void shootBullet() { 
+    public void shootBullet() {
         if (car != null && !isPaused) {
             soundManager.playClip("shoot", false);
-            int screenCenterX = getWidth() / 2;
-            int screenCenterY = getHeight() / 2;
-            
-            int bulletX = (int)tileMap.getCameraX() + screenCenterX;
-            int bulletY = (int)tileMap.getCameraY() + screenCenterY;
-            
-            Bullet newBullet = new Bullet(this, car.getHeight(), car.getWidth(), 
-                                         bulletX - car.getWidth()/2,
-                                         bulletY - car.getHeight()/2,
+            Bullet newBullet = new Bullet(this, car.getHeight(), car.getWidth(),
+                                         car.getX(), 
+                                         car.getY(),
                                          car.getDirection());
             bullets.add(newBullet);
         }
