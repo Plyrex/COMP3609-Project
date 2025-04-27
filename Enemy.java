@@ -31,6 +31,7 @@ public abstract class Enemy implements EntityInterface{
     protected int rand, rand1;
     protected boolean side;
     protected long lastShotTime, shotDelay;
+    protected int type;
 
     public void setLocation(){
         int panelWidth = panel.getWidth();
@@ -106,4 +107,8 @@ public abstract class Enemy implements EntityInterface{
     public int getY(){
         return this.y;
     };
+
+    public int getType(){
+        return this.type;
+    }
 }

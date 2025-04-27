@@ -27,6 +27,8 @@ public class GamePanel extends JPanel implements Runnable {
     private EnemyBullet[] oppBullets;
     private List<Bullet> bullets;
     private List<EnemyBullet> enemyBullets;
+    private List<PowerUp> drops;
+    private List<StripAnimation> animations;
     private boolean isRunning;
     private boolean isPaused;
     private TileMap tileMap;
@@ -41,19 +43,16 @@ public class GamePanel extends JPanel implements Runnable {
     private CutsceneManager cutsceneManager;
     Random random= new Random();
     int rand, type, move;
-    private int NUM_ENEMIES= 5;
+    private int NUM_ENEMIES= 10;
     private int kills= 0, powerupKills= 0;
     private StripAnimation animation, animation2;
     private int speed= 2;
     private int time, timeChange= 1;
-    private PowerUp health;
-    private int currentLevel = 1;
+    private PowerUp drop;
+    private int currentLevel = 3;
     private static final int MAX_LEVEL = 3;
     private treeveg Vageeta;
-
-    private static final int VIEW_WIDTH= 800;
-    private static final int VIEW_HEIGHT= 600;
-    private static final double ZOOM= 2.0;
+    private int collectedTags= 0;
 
     public GamePanel() {
         // setPreferredSize(new Dimension(VIEW_WIDTH, VIEW_HEIGHT));
@@ -70,11 +69,13 @@ public class GamePanel extends JPanel implements Runnable {
         oppBullets= null;
         gameThread = null;
         isRunning = false;
-        health= null;
+        drop= null;
 
 
         bullets = new ArrayList<>();
-          enemyBullets = new ArrayList<>();
+        enemyBullets = new ArrayList<>();
+        drops= new ArrayList<>();
+        animations= new ArrayList<>();
 
         cutsceneManager = new CutsceneManager(this);
 
@@ -113,7 +114,6 @@ public class GamePanel extends JPanel implements Runnable {
                 gameRender();
                 if (!cutsceneManager.isPlaying() && car != null) {
                     car.tick();
-                    System.out.println(car.getX()+" "+car.getY());
                 }
                 
                 Thread.sleep(33); 
@@ -150,13 +150,21 @@ public class GamePanel extends JPanel implements Runnable {
                             soundManager.playClip("hit", false);
                             bullets.remove(i);
                             addPoints(1);
-                            health= new DogTag(this, car, enemies[j].getX(), enemies[j].getY());
-                            animation2.start(health.getX()-20, health.getY()-10);
-                            System.out.println("Health Created at "+ enemies[j].getX()+ " "+ enemies[j].getY());
+                            rand= random.nextInt(3);
+                            if(rand==0 || rand== 1){
+                                drop= new DogTag(this, car, enemies[j].getX(), enemies[j].getY());
+                            }else{
+                                drop= new HealthPickup(this, car, enemies[j].getX(), enemies[j].getY());
+                            }
+
+                            StripAnimation dropAnim= new StripAnimation("images/select.png", 4, true);
+                            dropAnim.start(drop.getX()-20, drop.getY()-10);
+                            drops.add(drop);
+                            animations.add(dropAnim);
                             killEnemy(enemies[j].getX(), enemies[j].getY(), 
                                     enemies[j].getBoundingRectangle().height, 
                                     enemies[j].getBoundingRectangle().width, 
-                                    0, j, 0);
+                                    enemies[j].getType(), j, 0);
                             hitSomething = true;
                             break;
                         }
@@ -182,6 +190,17 @@ public class GamePanel extends JPanel implements Runnable {
                         endGame();
                     }
                 }
+            }
+
+            for (int i = drops.size() - 1; i >= 0; i--) {
+                    PowerUp drop = drops.get(i);
+                    // StripAnimation anim= animations.get(j);
+
+                    if (car != null && drop.getBoundingRectangle().intersects(car.getBoundingRectangle())) {
+                        drop.move();
+                        drops.remove(i);
+                        animations.remove(i);
+                    }
             }
 
             for (int i=0; i<NUM_ENEMIES; i++) {
@@ -218,8 +237,6 @@ public class GamePanel extends JPanel implements Runnable {
             if(animation2!= null)
                 animation2.update();
             
-            if(health!= null)
-                health.move();
         }
         //we use here for fuel tanfk shenangicans
         boolean allEnemiesDefeated = true;
@@ -230,7 +247,8 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }
 
-        if (allEnemiesDefeated) {
+        if (collectedTags>= 5) {
+            collectedTags= 0;
             advanceToNextLevel();
         }
     }
@@ -250,8 +268,8 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    public void removeHealth(){
-        health= null;
+    public void removeDrop(){
+        // health= null;
         animation2.stop();
     }
 
@@ -270,17 +288,21 @@ public class GamePanel extends JPanel implements Runnable {
         if(type==0){
             enemies[enemy]= null;
             animation.start(x, y);
-            imageFX1= new DisintegrateFX(this, x, y, height, width, "images/banditUp.png");
-            repaint();
-            kills+= 1;
-            if(method== 0)
-                powerupKills+= 1;
-        }else if(type==1){
-            animation.start(x, y);
             imageFX1= new DisintegrateFX(this, x, y, height, width, "images/tank.png");
-            soundManager.stopClip ("kamikaze");
-            if(method== 1)
-                powerupKills= -5;
+            // repaint();
+            kills+= 1;
+        }else if(type==1){
+            enemies[enemy]= null;
+            animation.start(x, y);
+            imageFX1= new DisintegrateFX(this, x, y, height, width, "images/banditUp.png");
+            // repaint();
+            kills+= 1;
+        }else if(type==2){
+            enemies[enemy]= null;
+            animation.start(x, y);
+            imageFX1= new DisintegrateFX(this, x, y, height, width, "images/blimpUp.png");
+            // repaint();
+            kills+= 1;
         }
     }
 
@@ -359,6 +381,14 @@ public class GamePanel extends JPanel implements Runnable {
         return lifePanel.getLifeTotal();
     }
 
+    public int getScoreTotal(){
+        return scoringPanel.getScore();
+    }
+
+    public void addDogTag(){
+        collectedTags+= 1;
+    }
+
     public void gameRender() { //I FIXED MFING GAME RENDER YEAAAAAAAAAAAA  https://jvm-gaming.org/t/best-way-to-render-with-java2d/45029
                                 //https://stackoverflow.com/questions/14922999/2d-graphics-rendering-in-java
         if (image == null) return;
@@ -386,16 +416,20 @@ public class GamePanel extends JPanel implements Runnable {
                 for (Enemy e : enemies) if (e != null) e.draw(imageContext, cameraX, cameraY);
                 for (Bullet b : bullets) b.draw(imageContext, cameraX, cameraY);
                 for (EnemyBullet eb : enemyBullets) eb.draw(imageContext, cameraX, cameraY);
+                for (PowerUp p : drops) p.draw(imageContext, cameraX, cameraY);
+                for (StripAnimation a : animations) a.draw(imageContext, cameraX, cameraY);
 
                 if(imageFX1 != null) imageFX1.draw(imageContext); //I SAW THIS SICK AAH WAY TO WRITE THIS INSTEAD OF HOW LONG IT USUALLY IS
                 if(imageFX2 != null) imageFX2.draw(imageContext);
                 if(animation != null) animation.draw(imageContext, cameraX, cameraY);
                 if(animation2 != null) animation2.draw(imageContext, cameraX, cameraY);
-                if(health != null) health.draw(imageContext, cameraX, cameraY);
+                // if(health != null) health.draw(imageContext, cameraX, cameraY);
 
 
                 renderlevel(imageContext);
                 renderhealth(imageContext);
+                renderDogTagCollected(imageContext);
+                renderScore(imageContext);
             }
             
             g2 = (Graphics2D) getGraphics();
@@ -416,6 +450,7 @@ public class GamePanel extends JPanel implements Runnable {
         //soundManager.playClip("background", true);
         isPaused = false;
         currentLevel = 1; // Reset to level 1
+        collectedTags= 0;
         
         // Create car
         car = new Car(this, 700, 540);
@@ -533,35 +568,20 @@ public class GamePanel extends JPanel implements Runnable {
                 break;
                 
             case 2:
+
                 speed += 2; 
                 for (int i = 0; i < NUM_ENEMIES; i++) {
-                    int enemyType = random.nextInt(10);
-                    if (enemyType < 7) { // 70% chance for Bandit
-                        spawnEnemyInWorldBounds(i, speed);
-                    } else { // 30% chance for Tank
-                        spawnEnemyInWorldBounds(i, speed);
-                    }
+                    spawnEnemyInWorldBounds(i, speed);
                 }
-                //replace kamikaze with whgatever we decide
-                // kamikaze = new Kamikaze(this, random.nextInt(400), 50, car, 0);
                 break;
                 
             case 3:
 
-                speed += 3;
+                speed= 2;
+                NUM_ENEMIES= 1;
                 for (int i = 0; i < NUM_ENEMIES; i++) {
-                    int enemyType = random.nextInt(10);
-                    if (enemyType < 3) { // 30% chance for Tank
-                        spawnEnemyInWorldBounds(i, speed);
-                    } else if (enemyType < 8) { // 50% chance for Bandit
-                        spawnEnemyInWorldBounds(i, speed);
-                    } else { 
-                        // enemies[i] = new Blimp(this, randX, randY, car, i, speed + 2);
-                        spawnEnemyInWorldBounds(i, speed);
-                    }
+                    spawnEnemyInWorldBounds(i, speed);
                 }
-                // replace with wahthever
-                // kamikaze = new Kamikaze(this, random.nextInt(400), 50, car, 0);
                 break;
         }
     }
@@ -595,30 +615,38 @@ public class GamePanel extends JPanel implements Runnable {
         else
             enemies[index] = new Tank(this, randX, randY, car, index, speed);
     } 
-    else {
-        int type = random.nextInt(3);
-        if (type == 0)
-            enemies[index] = new Tank(this, randX, randY, car, index, speed + 1);
-        else if (type == 1)
-            enemies[index] = new Bandit(this, randX, randY, car, index, speed + 2);
-        else {
-            // enemies[index] = new Blimp(this, randX, randY, car, index, speed);
-            enemies[index] = new Tank(this, randX, randY, car, index, speed + 3);
-        }
+    else if (currentLevel== 3){
+        enemies[index] = new Blimp(this, randX, randY, car, index, speed);
     }
 }
-public void renderhealth(Graphics2D imageContext){
-    int healthval = getLifeTotal();
-    Font healthFont = new Font("Arial", Font.BOLD, 16);
-    imageContext.setFont(healthFont);
-    imageContext.setColor(Color.BLACK);
-    imageContext.drawString("HEALTH: " + healthval, 10, 40);
-}
+    public void renderhealth(Graphics2D imageContext){
+        int healthval = getLifeTotal();
+        Font healthFont = new Font("Arial", Font.BOLD, 16);
+        imageContext.setFont(healthFont);
+        imageContext.setColor(Color.BLACK);
+        imageContext.drawString("HEALTH: " + healthval, 10, 40);
+    }
 
-public void renderlevel(Graphics2D imageContext){
-    Font levelFont = new Font("Arial", Font.BOLD, 16);
-    imageContext.setFont(levelFont);
-    imageContext.setColor(Color.WHITE);
-    imageContext.drawString("LEVEL: " + currentLevel, 10, 20);
-}
+    public void renderlevel(Graphics2D imageContext){
+        Font levelFont = new Font("Arial", Font.BOLD, 16);
+        imageContext.setFont(levelFont);
+        imageContext.setColor(Color.WHITE);
+        imageContext.drawString("LEVEL: " + currentLevel, 10, 20);
+    }
+
+    public void renderDogTagCollected(Graphics2D imageContext){
+        Font levelFont = new Font("Arial", Font.BOLD, 16);
+        imageContext.setFont(levelFont);
+        imageContext.setColor(Color.WHITE);
+        imageContext.drawString("Dog Tags: " + collectedTags+ " / 5", 10, 390);
+    }
+
+    public void renderScore(Graphics2D imageContext){
+        int score= getScoreTotal();
+        Font levelFont = new Font("Arial", Font.BOLD, 16);
+        imageContext.setFont(levelFont);
+        imageContext.setColor(Color.WHITE);
+        imageContext.drawString("Score: " + score, 310, 20);
+    }
+
 }

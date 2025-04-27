@@ -26,14 +26,16 @@ public class Blimp extends Enemy{
         this.oppBullet= null;
         
         soundManager = SoundManager.getInstance();
-        imageUp= ImageManager.loadImage ("images/banditUp.png");
-        imageDown= ImageManager.loadImage ("images/banditDown.png");
-        imageLeft= ImageManager.loadImage ("images/banditLeft.png");
-        imageRight= ImageManager.loadImage ("images/banditRight.png");
+        imageUp= ImageManager.loadImage ("images/blimpUp.png");
+        imageDown= ImageManager.loadImage ("images/blimpDown.png");
+        imageLeft= ImageManager.loadImage ("images/blimpLeft.png");
+        imageRight= ImageManager.loadImage ("images/blimpRight.png");
         alienImage = imageUp;
         imageFX1= null;
 
         rand= random.nextInt(4);
+
+        type= 2;
     }
 
     // public void setLocation(){

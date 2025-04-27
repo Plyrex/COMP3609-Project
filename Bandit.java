@@ -33,6 +33,8 @@ public class Bandit extends Enemy{
         imageFX1= null;
 
         rand= random.nextInt(4);
+
+        type= 1;
     }
 
     // public void setLocation(){

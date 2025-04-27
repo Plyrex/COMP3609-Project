@@ -30,12 +30,7 @@ public class Tank extends Enemy{
         alienImage = ImageManager.loadImage ("images/tank.png");
         imageFX1= null;
 
-        rand= random.nextInt(2);
-        if(rand==0){
-            side= true;
-        }else{
-            side= false;
-        }
+        type= 0;
 
     }
 
