@@ -167,18 +167,21 @@ public class TileMap {
         boundCamera();
     }
     
-    /**
-     * Ensure camera stays within map bounds
-     */
     private void boundCamera() {
-        if (cameraX < 0) cameraX = 0;
-        if (cameraY < 0) cameraY = 0;
-
-        int maxX = Math.max(0, mapWidth * TILE_SIZE - screenWidth);
-        int maxY = Math.max(0, mapHeight * TILE_SIZE - screenHeight);
-        
-        if (cameraX > maxX) cameraX = maxX;
-        if (cameraY > maxY) cameraY = maxY;
+        int mapPixelWidth = getWidthPixels();
+        int mapPixelHeight = tilesToPixels(mapHeight);
+        double maxX = Math.max(0, mapPixelWidth - screenWidth);
+        double maxY = Math.max(0, mapPixelHeight - screenHeight);
+        if (cameraX < 0) {
+            cameraX = 0;
+        } else if (cameraX > maxX) {
+            cameraX = maxX;
+        }
+        if (cameraY < 0) {
+            cameraY = 0;
+        } else if (cameraY > maxY) {
+            cameraY = maxY;
+        }
     }
     
     /**
@@ -233,11 +236,10 @@ public class TileMap {
         this.cameraY = y;
         boundCamera();
     }
-
-    public void centerOn(int x, int y) {
-        cameraX = x - (screenWidth / 2);
-        cameraY = y - (screenHeight / 2);
-        boundCamera();
+    public void centerOn(int worldX, int worldY) {
+        double targetX = worldX - (screenWidth / 2.0);
+        double targetY = worldY - (screenHeight / 2.0);
+        setCameraPosition(targetX, targetY);
     }
 
     public int[] findRunwayCenter() {

@@ -16,50 +16,46 @@ public class Bullet {
         this.panel = panel;
         int carCenterX = startX + width / 2;
         int carCenterY = startY + height / 2;
+        this.carDirection = direction; 
 
-        if(direction == 0){
-            this.x = carCenterX;
-            this.y = startY;
-        } else if(direction == 1){ 
-            this.x = carCenterX;
-            this.y = startY + height;
-        } else if(direction == 2){
-            this.x = startX;
-            this.y = carCenterY;
-        } else if(direction == 3){
-            this.x = startX + width;
-            this.y = carCenterY;
+        if(carDirection == 0){ 
+            this.x = carCenterX - size / 2; 
+            this.y = startY - size;  
+            this.dx = 0;
+            this.dy = -speed;
+            this.bulletImage = ImageManager.loadImage("images/bulletUp.png");
+        } else if(carDirection == 1){
+            this.x = carCenterX - size / 2;
+            this.y = startY + height;  
+            this.dx = 0;
+            this.dy = speed;
+            this.bulletImage = ImageManager.loadImage("images/bulletDown.png");
+        } else if(carDirection == 2){
+            this.x = startX - size; 
+            this.y = carCenterY - size / 2;
+            this.dx = -speed;
+            this.dy = 0;
+            this.bulletImage = ImageManager.loadImage("images/bulletLeft.png");
+        } else if(carDirection == 3){ 
+            this.x = startX + width; 
+            this.y = carCenterY - size / 2;
+            this.dx = speed;
+            this.dy = 0;
+            this.bulletImage = ImageManager.loadImage("images/bulletRight.png");
+        } else {
+             this.x = carCenterX - size / 2;
+             this.y = startY - size;
+             this.dx = 0;
+             this.dy = -speed;
+             this.bulletImage = ImageManager.loadImage("images/bulletUp.png");
         }
-
-        this.dx = 0;
-        this.dy = -speed;
-        this.carDirection = direction;
-
         this.bulletUpImage = ImageManager.loadImage("images/bulletUp.png");
         this.bulletDownImage = ImageManager.loadImage("images/bulletDown.png");
         this.bulletLeftImage = ImageManager.loadImage("images/bulletLeft.png");
         this.bulletRightImage = ImageManager.loadImage("images/bulletRight.png");
-        this.bulletImage = bulletUpImage;
     }
 
     public void shoot() {
-        if(carDirection== 0){
-            dx=0;
-            dy= -speed;
-            bulletImage= bulletUpImage;
-        }else if(carDirection== 1){
-            dx=0;
-            dy= speed;
-            bulletImage= bulletDownImage;
-        }else if(carDirection== 2){
-            dx= -speed;
-            dy=0;
-            bulletImage= bulletLeftImage;
-        }else if(carDirection== 3){
-            dx= speed;
-            dy=0;
-            bulletImage= bulletRightImage;
-        }
         x += dx;
         y += dy;
     }
