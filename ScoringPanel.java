@@ -33,4 +33,8 @@ public class ScoringPanel extends JPanel{
         score= 0;
         scoreTF.setText(Integer.toString(init));
     }
+
+    public int getScore(){
+        return score;
+    }
 }
