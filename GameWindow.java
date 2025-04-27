@@ -34,7 +34,7 @@ public class GameWindow extends JFrame
 	@SuppressWarnings({"unchecked"})
 	public GameWindow() {
  
-		setTitle ("A Bullet Hell Game V2");
+		setTitle ("Bravo One: Skies of Retribution");
 		setSize (525, 525);
 
 		// create user interface objects
@@ -113,8 +113,6 @@ public class GameWindow extends JFrame
 		// add sub-panels with GUI objects to mainPanel and set its colour
 
 		// mainPanel.add(infoPanel);
-		mainPanel.add(gamePanel.scoringPanel);
-		mainPanel.add(gamePanel.lifePanel);
 		mainPanel.add(gamePanel);
 		mainPanel.add(buttonPanel);
 		mainPanel.setBackground(Color.PINK);
