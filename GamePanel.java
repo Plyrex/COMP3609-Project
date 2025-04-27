@@ -673,7 +673,7 @@ public class GamePanel extends JPanel implements Runnable {
         Font levelFont = new Font("Arial", Font.BOLD, 16);
         imageContext.setFont(levelFont);
         imageContext.setColor(Color.WHITE);
-        imageContext.drawString("Dog Tags: " + collectedTags+ " / 5",290, 40);
+        imageContext.drawString("Dog Tags: " + collectedTags+ " / 5",280, 40);
     }
 
     private void renderScore(Graphics2D imageContext){
