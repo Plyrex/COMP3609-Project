@@ -77,20 +77,30 @@ public class Car {
         y+= velY;
     }
 
+    private void checkBounds(){
+        if(x<=260) x= 260;
+        if(x>= 1660) x= 1660;
+        if(y<=260) y= 260;
+        if(y>= 1340) y= 1340;
+    }
+
 	public void move(int direction) {
     if (!panel.isVisible()) return;
+
+    checkBounds();
 
     TileMap tileMap = ((GamePanel)panel).getTileMap();
     int worldWidth = tileMap != null ? tileMap.getWidthPixels() : panel.getWidth();
     int worldHeight = tileMap != null ? tileMap.tilesToPixels(tileMap.getHeight()) : panel.getHeight();
+    // System.out.println(worldHeight+" "+worldWidth);
 
     if (direction == 1) { // Left
         carImage = carLeftImage;
         setDirection(2);
         setVelX(-5);
         // setVelY(0);
-        if (x <= 0) {
-            x = 0;
+        if (x <= 260) {
+            x = 260;
             // setVelX(0);
         }
     }
@@ -109,8 +119,8 @@ public class Car {
         setDirection(0);
         setVelY(-5);
         // setVelX(0);
-        if (y <= 0) {
-            y = 0;
+        if (y <= 260) {
+            y = 260;
             // setVelY(0);
         }
     }
