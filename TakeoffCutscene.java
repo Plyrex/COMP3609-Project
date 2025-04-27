@@ -75,6 +75,7 @@ public class TakeoffCutscene extends Cutscene {
             }
         } else if (currentState == ENDING) {
             if (frameCount > 30) {
+                soundManager.stopClip("engine");
                 isPlaying = false;
                 isDone = true;
             }

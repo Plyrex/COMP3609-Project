@@ -90,7 +90,11 @@ public class EnemyBullet {
     }
     
     public boolean isOffScreen() {
-        return x < 0 || x > panel.getWidth() || y < 0 || y > panel.getHeight();
+        TileMap tileMap = panel.getTileMap();
+        if (tileMap == null) return false;
+        int worldWidth = tileMap.getWidthPixels();
+        int worldHeight = tileMap.tilesToPixels(tileMap.getHeight());
+        return x < 0 || x > worldWidth || y < 0 || y > worldHeight;
     }
     
     public Rectangle2D.Double getBoundingRectangle() {

@@ -8,7 +8,7 @@ public class Tank extends Enemy{
         // dimension = panel.getSize();
         backgroundColour = panel.getBackground ();
 
-        width = 58;
+        width = 30;
         height = 52;
 
         random = new Random();

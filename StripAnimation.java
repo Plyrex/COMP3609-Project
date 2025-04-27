@@ -72,11 +72,13 @@ public class StripAnimation {
 	}
 
 
-	public void draw(Graphics2D g2) {
+	public void draw(Graphics2D g2, double cameraX, double cameraY) {
+			int drawX = (int)(x - cameraX);
+			int drawY = (int)(y - cameraY);
 		if (!animation.isStillActive())
 			return;
 
-		g2.drawImage(animation.getImage(), x, y, 70, 50, null);
+		g2.drawImage(animation.getImage(), drawX, drawY, 70, 50, null);
 	}
 
 }

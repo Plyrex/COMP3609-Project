@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Iterator;
 import java.io.IOException;
 import javax.swing.SwingUtilities;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 
 /**
@@ -387,14 +388,13 @@ public class GamePanel extends JPanel implements Runnable {
 
                 if(imageFX1 != null) imageFX1.draw(imageContext); //I SAW THIS SICK AAH WAY TO WRITE THIS INSTEAD OF HOW LONG IT USUALLY IS
                 if(imageFX2 != null) imageFX2.draw(imageContext);
-                if(animation != null) animation.draw(imageContext);
-                if(animation2 != null) animation2.draw(imageContext);
-                if(health != null) health.draw(imageContext);
+                if(animation != null) animation.draw(imageContext, cameraX, cameraY);
+                if(animation2 != null) animation2.draw(imageContext, cameraX, cameraY);
+                if(health != null) health.draw(imageContext, cameraX, cameraY);
 
-                Font levelFont = new Font("Arial", Font.BOLD, 16);
-                imageContext.setFont(levelFont);
-                imageContext.setColor(Color.WHITE);
-                imageContext.drawString("LEVEL: " + currentLevel, 10, 20);
+
+                renderlevel(imageContext);
+                renderhealth(imageContext);
             }
             
             g2 = (Graphics2D) getGraphics();
@@ -484,14 +484,14 @@ public class GamePanel extends JPanel implements Runnable {
             case 2:
                 tilesetPath = "tilemap/level2.png"; //idk something
                 soundManager.stopClip("backgroundfull");
-                soundManager.playClip("background2", false);
-                soundManager.setVolume("background2", 0.7f);
+                soundManager.playClip("country2", false);
+                soundManager.setVolume("country2", 0.7f);
                 break;
             case 3:
                 tilesetPath = "tilemap/level3.png";
                 soundManager.stopClip("background2");
-                soundManager.playClip("background3", false);
-                soundManager.setVolume("background3", 0.7f);
+                soundManager.playClip("country3", false);
+                soundManager.setVolume("country3", 0.7f);
                 break;
             default:
                 tilesetPath = "tilemap/basic_tileset_and_assets_standard/terrain_tiles_v2.png";
@@ -604,5 +604,19 @@ public class GamePanel extends JPanel implements Runnable {
             enemies[index] = new Tank(this, randX, randY, car, index, speed + 3);
         }
     }
+}
+public void renderhealth(Graphics2D imageContext){
+    int healthval = getLifeTotal();
+    Font healthFont = new Font("Arial", Font.BOLD, 16);
+    imageContext.setFont(healthFont);
+    imageContext.setColor(Color.BLACK);
+    imageContext.drawString("HEALTH: " + healthval, 10, 40);
+}
+
+public void renderlevel(Graphics2D imageContext){
+    Font levelFont = new Font("Arial", Font.BOLD, 16);
+    imageContext.setFont(levelFont);
+    imageContext.setColor(Color.WHITE);
+    imageContext.drawString("LEVEL: " + currentLevel, 10, 20);
 }
 }

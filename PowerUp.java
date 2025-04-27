@@ -23,14 +23,11 @@ public abstract class PowerUp{
    protected SoundManager soundManager;
    protected Image alienImage;
 
-   public void draw (Graphics2D imageContext) {
-      Graphics g = panel.getGraphics ();
-      Graphics2D g2 = (Graphics2D) g;
-
-      imageContext.drawImage(alienImage, x, y, width, height, null);
-
-      g.dispose();
-   }
+   public void draw(Graphics2D g2, double cameraX, double cameraY) {
+      int drawX = (int)(x - cameraX);
+      int drawY = (int)(y - cameraY);
+      g2.drawImage(alienImage, drawX, drawY, width, height, null);
+  }
 
    public void erase() {
       Graphics g = panel.getGraphics();
