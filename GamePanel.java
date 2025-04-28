@@ -132,6 +132,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void gameUpdate() {
         if (fadeActive) {
+            enemyDeleteBullet(enemyBullets);
             fadeAlpha += FADE_SPEED;
             if (fadeAlpha >= 1.0f) {
                 fadeAlpha = 1.0f;
@@ -393,8 +394,13 @@ public class GamePanel extends JPanel implements Runnable {
             bullets.remove(bullets.size() - 1);
         }
     }
-    public void enemyDeleteBullet(int enemy){
-   
+    public void enemyDeleteBullet(List<EnemyBullet> enemyBullets2){
+        for (int i = enemyBullets2.size() - 1; i >= 0; i--) {
+            EnemyBullet eb = enemyBullets2.get(i);
+            if (eb.isOffScreen()) {
+                enemyBullets2.remove(i);
+            }
+        }
     }
 
     public void addPoints(int points){
@@ -486,6 +492,7 @@ public class GamePanel extends JPanel implements Runnable {
         isPaused = false;
         currentLevel = 1; // Reset to level 1
         collectedTags= 0;
+        fadeActive = false;
         
         // Create car
         car = new Car(this, 700, 540);
@@ -551,17 +558,21 @@ public class GamePanel extends JPanel implements Runnable {
         String tilesetPath;
         switch (level) { //unfortunately i did not continue the funny if else statmenets here bc switch is sm easier here
             case 1:
+                clearArray();
                 tilesetPath = "tilemap/level1.png";
                 soundManager.playClip("backgroundfull", false);
                 soundManager.setVolume("backgroundfull", 0.7f);
+
                 break;
             case 2:
+                clearArray();
                 tilesetPath = "tilemap/level2.png"; //idk something
                 soundManager.stopClip("backgroundfull");
                 soundManager.playClip("country2", false);
                 soundManager.setVolume("country2", 0.7f);
                 break;
             case 3:
+                clearArray();
                 tilesetPath = "tilemap/level3.png";
                 soundManager.stopClip("background2");
                 soundManager.playClip("country3", false);
@@ -726,5 +737,15 @@ public class GamePanel extends JPanel implements Runnable {
         }
         
         imageContext.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+    }
+
+    public void clearArray() {
+        if (bullets != null) bullets.clear();
+        if (enemyBullets != null) enemyBullets.clear();
+        if (drops != null) drops.clear();
+        if (animations != null) animations.clear();
+        enemies = null;
+        oppBullets = null;
+        spawns = null;
     }
 }
