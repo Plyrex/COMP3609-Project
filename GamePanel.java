@@ -167,16 +167,16 @@ public class GamePanel extends JPanel implements Runnable {
                             soundManager.playClip("hit", false);
                             bullets.remove(i);
                             addPoints(1);
-                            rand = random.nextInt(3);
-                            if (rand == 0 || rand == 1) {
-                                drop = new DogTag(this, car, enemies[j].getX(), enemies[j].getY());
-                            } else {
-                                drop = new HealthPickup(this, car, enemies[j].getX(), enemies[j].getY());
-                            }
-                            StripAnimation dropAnim = new StripAnimation("images/select.png", 4, true);
-                            dropAnim.start(drop.getX() - 20, drop.getY() - 10);
-                            drops.add(drop);
-                            animations.add(dropAnim);
+                            // rand = random.nextInt(3);
+                            // if (rand == 0 || rand == 1) {
+                            //     drop = new DogTag(this, car, enemies[j].getX(), enemies[j].getY());
+                            // } else {
+                            //     drop = new HealthPickup(this, car, enemies[j].getX(), enemies[j].getY());
+                            // }
+                            // StripAnimation dropAnim = new StripAnimation("images/select.png", 4, true);
+                            // dropAnim.start(drop.getX() - 20, drop.getY() - 10);
+                            // drops.add(drop);
+                            // animations.add(dropAnim);
                             if (enemies[j].takeDamage()) {
                                 killEnemy(enemies[j].getX(), enemies[j].getY(),
                                     enemies[j].getBoundingRectangle().height,
@@ -325,6 +325,17 @@ public class GamePanel extends JPanel implements Runnable {
             // repaint();
             kills+= 1;
         }
+
+        rand = random.nextInt(3);
+        if (rand == 0 || rand == 1) {
+            drop = new DogTag(this, car,x, y);
+        } else {
+            drop = new HealthPickup(this, car, x, y);
+        }
+        StripAnimation dropAnim = new StripAnimation("images/select.png", 4, true);
+        dropAnim.start(drop.getX() - 20, drop.getY() - 10);
+        drops.add(drop);
+        animations.add(dropAnim);
     }
 
     public void endDisintegrate(){
