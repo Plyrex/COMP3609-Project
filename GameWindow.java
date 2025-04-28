@@ -80,7 +80,7 @@ public class GameWindow extends JFrame
 		// create the gamePanel for game entities
 
 		gamePanel = new GamePanel();
-		gamePanel.setPreferredSize(new Dimension(400, 400));
+		gamePanel.setPreferredSize(new Dimension(450, 450));
 
 		// create infoPanel
 
@@ -106,8 +106,8 @@ public class GameWindow extends JFrame
 		// add buttons to buttonPanel
 
 		buttonPanel.add (startB);
-		buttonPanel.add (pauseB);
-		buttonPanel.add (endB);
+		// buttonPanel.add (pauseB);
+		// buttonPanel.add (endB);
 		buttonPanel.add (exitB);
 
 		// add sub-panels with GUI objects to mainPanel and set its colour
