@@ -525,6 +525,9 @@ public class GamePanel extends JPanel implements Runnable {
         soundManager.stopClip("backgroundfull");
         soundManager.stopClip("country2");
         soundManager.stopClip("country3");			
+        soundManager.stopClip("background");			
+        soundManager.stopClip("takeoff");			
+        soundManager.stopClip("engine");			
         isRunning = false;
         speed = 5;
     }

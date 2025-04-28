@@ -107,7 +107,7 @@ public class GameWindow extends JFrame
 
 		buttonPanel.add (startB);
 		// buttonPanel.add (pauseB);
-		// buttonPanel.add (endB);
+		buttonPanel.add (endB);
 		buttonPanel.add (exitB);
 
 		// add sub-panels with GUI objects to mainPanel and set its colour
