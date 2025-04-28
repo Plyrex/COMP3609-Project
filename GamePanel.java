@@ -579,7 +579,7 @@ public class GamePanel extends JPanel implements Runnable {
                 soundManager.setVolume("country3", 0.7f);
                 break;
             default:
-                tilesetPath = "tilemap/basic_tileset_and_assets_standard/terrain_tiles_v2.png";
+                tilesetPath = "tilemap/level1.png";
         }
         
         tileMapManager = new TileMapManager(
