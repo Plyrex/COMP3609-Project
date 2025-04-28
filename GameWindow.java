@@ -80,7 +80,7 @@ public class GameWindow extends JFrame
 		// create the gamePanel for game entities
 
 		gamePanel = new GamePanel();
-		gamePanel.setPreferredSize(new Dimension(450, 450));
+		gamePanel.setPreferredSize(new Dimension(400, 400));
 
 		// create infoPanel
 
