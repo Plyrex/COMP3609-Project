@@ -11,7 +11,6 @@ public class EnemyBullet {
     private int size = 5;
     private int speed = 8; 
     private GamePanel panel;
-    private Animation bulletAnimation;
     private Image bulletImage;
     private int enemyIndex;
     
@@ -37,52 +36,18 @@ public class EnemyBullet {
         }
         
         bulletImage= ImageManager.loadImage("images/enemyBullet.png");
-        // bulletWidth = size;
-        // bulletHeight = size;
-        
-        // try {
-        //     Image stripImage = ImageManager.loadImage("images/special.png");
-        //     if (stripImage != null) {
-        //         int frameCount = 4;
-        //         int imgWidth = stripImage.getWidth(null);
-        //         int imgHeight = stripImage.getHeight(null);
-                
-        //         if (imgWidth > 0 && imgHeight > 0 && imgWidth >= frameCount) { //THIS IS TO FIX AN ILLEGAL ARGUMENT EXCEPTION ARGHH
-        //             bulletWidth = imgWidth / frameCount;
-        //             bulletHeight = imgHeight;
-                    
-        //             bulletAnimation = new Animation(true);
-        //             for (int i = 0; i < frameCount; i++) {
-        //                 BufferedImage frame = new BufferedImage(bulletWidth, bulletHeight, BufferedImage.TYPE_INT_ARGB);
-        //                 Graphics2D g2d = frame.createGraphics();
-        //                 g2d.drawImage(stripImage, 
-        //                             0, 0, bulletWidth, bulletHeight, 
-        //                             i * bulletWidth, 0, (i + 1) * bulletWidth, bulletHeight, 
-        //                             null);
-        //                 g2d.dispose();
-        //                 bulletAnimation.addFrame(frame, 100);
-        //             }
-        //             bulletAnimation.start();
-        //         }
-        //     }
-        // } catch (Exception e) {
-        //     e.printStackTrace(); //incase of error bc cries
-        // }
     }
 
     public void shoot() {
         x += dx;
         y += dy;
-        if(bulletAnimation != null) {
-            bulletAnimation.update();
-        }
     }
     
     public void draw(Graphics2D g2, double cameraX, double cameraY) {
         int drawX = (int)(x - cameraX - size/2);
         int drawY = (int)(y - cameraY - size/2);
-        if (bulletAnimation != null && bulletAnimation.isStillActive()) {
-            g2.drawImage(bulletAnimation.getImage(), drawX, drawY, size, size, null);
+        if (bulletImage != null) {
+            g2.drawImage(bulletImage, drawX, drawY, size, size, null);
         } else {
             g2.setColor(Color.RED);
             g2.fillOval(drawX, drawY, size, size);
